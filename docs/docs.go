@@ -85,6 +85,26 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/userinfo": {
+            "post": {
+                "description": "获取用户信息接口",
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "全局接口"
+                ],
+                "summary": "获取用户信息接口",
+                "responses": {
+                    "200": {
+                        "description": "用户信息",
+                        "schema": {
+                            "$ref": "#/definitions/resp.ResponseData"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -199,7 +219,7 @@ const docTemplate = `{
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
-	Host:             "127.0.0.1:8080",
+	Host:             "39.105.136.3:8888",
 	BasePath:         "",
 	Schemes:          []string{},
 	Title:            "后端系统 API在线测试文档",

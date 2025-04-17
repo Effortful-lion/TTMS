@@ -27,7 +27,6 @@ func InitRouter() *gin.Engine {
 
 	r.POST("/signup", controller.NewUserController().SignUpHandler) // 用户注册
 	r.POST("/login", controller.NewUserController().LoginHandler)   // 用户登录
-	// TODO 加接口：获取用户全部信息
 	r.POST("/userinfo", middleware.JWTAuthMiddleware(),controller.NewUserController().GetUserInfoHandler)
 
 	// 普通用户权限模块

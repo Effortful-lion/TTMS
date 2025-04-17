@@ -78,7 +78,7 @@ definitions:
         - $ref: '#/definitions/resp.ResCode'
         description: 自定义的status
     type: object
-host: 127.0.0.1:8080
+host: 39.105.136.3:8888
 info:
   contact:
     email: server-lion@qq.com
@@ -130,6 +130,19 @@ paths:
           schema:
             $ref: '#/definitions/resp.ResponseData'
       summary: 注册接口
+      tags:
+      - 全局接口
+  /userinfo:
+    post:
+      consumes:
+      - application/json
+      description: 获取用户信息接口
+      responses:
+        "200":
+          description: 用户信息
+          schema:
+            $ref: '#/definitions/resp.ResponseData'
+      summary: 获取用户信息接口
       tags:
       - 全局接口
 swagger: "2.0"

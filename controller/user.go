@@ -48,7 +48,7 @@ func (*UserController) SignUpHandler(c *gin.Context) {
 		return	
 	}
 
-	err := service.NewUserService().SignUp(username, password,auth)
+	err := service.NewUserService(auth).SignUp(username, password)
 	if err != nil {
 		resp.ResponseErrorWithMsg(c, resp.CodeError, err.Error())
 		return	
@@ -82,7 +82,7 @@ func (*UserController) LoginHandler(c *gin.Context) {
 		return	
 	}
 
-	user_id, err := service.NewUserService().Login(username, password, auth)
+	user_id, err := service.NewUserService(auth).Login(username, password)
 	if err!= nil {
 		resp.ResponseErrorWithMsg(c, resp.CodeError, err.Error())
 		return
@@ -122,12 +122,20 @@ func (*UserController) LoginHandler(c *gin.Context) {
 }
 
 
+// @Summary 获取用户信息接口
+// @Description 获取用户信息接口
+// @Tags 全局接口
+// @Accept json
+// @Produc json
+// @Header 200 {string} Token "用户token"
+// @Success 200 {object} resp.ResponseData "用户信息"
+// @Router /userinfo [post]
 func (*UserController) GetUserInfoHandler(c *gin.Context) {
 	// 从上下文中获取用户ID和权限
 	user_id := GetCurrentUserID(c)
 	auth := GetCurrentUserAuthority(c)
 
-	userinfo, err := service.NewUserService().GetUserInfo(user_id, auth)
+	userinfo, err := service.NewUserService(auth).GetUserInfo(user_id)
 	if err!= nil {
 		resp.ResponseErrorWithMsg(c, resp.CodeError, err.Error())
 		return

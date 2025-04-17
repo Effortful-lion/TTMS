@@ -2,33 +2,21 @@ package service
 
 import (
 	"TTMS/dao/mysql"
-	"TTMS/pkg"
 	"errors"
 )
 
 type UserService struct {
+	auth string
 }
 
-func NewUserService() *UserService {
-	return &UserService{}
+func NewUserService(auth string) *UserService {
+	return &UserService{auth: auth}
 }
 
-func (*UserService) SignUp(username, password, auth string) (err error) {
+func (u *UserService) SignUp(username, password string) (err error) {
+	auth := u.auth
 	// 定义接口变量
-	var userdao mysql.BaseUserDao
-
-	// 根据权限类型赋值
-	switch auth {
-	case pkg.AuthUser:
-		userdao = mysql.NewUserDao()
-	case pkg.AuthAdmin:
-		userdao = mysql.NewAdminDao()
-	case pkg.AuthAccount:
-		userdao = mysql.NewAccountDao()
-	default:
-		return errors.New("权限错误")
-	}
-
+	userdao := mysql.NewUserDao(auth)
 	// 统一处理用户注册逻辑
 	user, err := userdao.GetUserLoginByUsername(username)
 	if err != nil {
@@ -44,19 +32,10 @@ func (*UserService) SignUp(username, password, auth string) (err error) {
 	return nil
 }
 
-func (*UserService) Login(username, password, auth string) (data int64, err error) {
+func (u *UserService) Login(username, password string) (data int64, err error) {
+	auth := u.auth
 	// 定义接口变量
-	var userdao mysql.BaseUserDao
-
-	// 根据权限类型赋值
-	switch auth {
-	case pkg.AuthUser:
-		userdao = mysql.NewUserDao()
-	case pkg.AuthAdmin:
-		userdao = mysql.NewAdminDao()
-	default:
-		return 0, errors.New("权限错误")
-	}
+	userdao := mysql.NewUserDao(auth)
 
 	// 从数据库中查询用户名是否存在
 	user, err := userdao.GetUserLoginByUsername(username)
@@ -70,19 +49,10 @@ func (*UserService) Login(username, password, auth string) (data int64, err erro
 	return 0, errors.New("用户名或密码错误")
 }
 
-func (*UserService) GetUserInfo(user_id int64, auth string) (data any, err error) {
+func (u *UserService) GetUserInfo(user_id int64) (data any, err error) {
+	auth := u.auth
 	// 定义接口变量
-	var userdao mysql.BaseUserDao	
-	// 根据权限类型赋值
-	switch auth {
-	case pkg.AuthUser:
-		userdao = mysql.NewUserDao()
-	case pkg.AuthAdmin:
-		userdao = mysql.NewAdminDao()
-	default:
-		return nil, errors.New("权限错误")		
-	}
-
+	userdao := mysql.NewUserDao(auth)
 	// 从数据库中查询用户信息
 	user, err := userdao.GetUserInfoByID(user_id)
 	if err!= nil {
