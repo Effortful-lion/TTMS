@@ -22,50 +22,50 @@ func (ud *UserDao) GetUserLoginByID(id int64) (do.UserTypeGetter, error) {
 	//var user do.UserLogin
 	switch auth {
 	case pkg.AuthAdmin:
-		user := do.AdminLogin{UserID: id}
-		err := DB.First(&user).Error
+		user := do.AdminLogin{}
+		err := DB.Where("user_id = ?", id).First(&user).Error
 		if err != nil {
 			return nil, err
 		}
 		return &user, nil
 	case pkg.AuthUser:
-		user := do.UserLogin{UserID: id}
-		err := DB.First(&user).Error
+		user := do.UserLogin{}
+		err := DB.Where("user_id = ?", id).First(&user).Error
 		if err!= nil {
 			return nil, err
 		}
 		return &user, nil
 	case pkg.AuthStaff:
-		user := do.StaffLogin{UserID: id}
-		err := DB.First(&user).Error
+		user := do.StaffLogin{}
+		err := DB.Where("user_id = ?", id).First(&user).Error
 		if err!= nil {
 			return nil, err
 		}
 		return &user, nil
 	case pkg.AuthManager:
-		user := do.ManagerLogin{UserID: id}
-		err := DB.First(&user).Error
+		user := do.ManagerLogin{}
+		err := DB.Where("user_id = ?", id).First(&user).Error
 		if err!= nil {
 			return nil, err
 		}
 		return &user, nil
 	case pkg.AuthFinance:
-		user := do.FinanceLogin{UserID: id}
-		err := DB.First(&user).Error
+		user := do.FinanceLogin{}
+		err := DB.Where("user_id = ?", id).First(&user).Error
 		if err!= nil {
 			return nil, err
 		}
 		return &user, nil
 	case pkg.AuthTicketor:
-		user := do.TicketorLogin{UserID: id}
-		err := DB.First(&user).Error
+		user := do.TicketorLogin{}
+		err := DB.Where("user_id = ?", id).First(&user).Error
 		if err!= nil {
 			return nil, err
 		}
 		return &user, nil
 	case pkg.AuthAccount:
-		user := do.AccountLogin{UserID: id}
-		err := DB.First(&user).Error
+		user := do.AccountLogin{}
+		err := DB.Where("user_id = ?", id).First(&user).Error
 		if err!= nil {
 			return nil, err
 		}
@@ -79,8 +79,8 @@ func (ud *UserDao) GetUserLoginByUsername(username string) (do.UserTypeGetter, e
 	auth := ud.auth
 	switch auth {
 	case pkg.AuthAdmin:
-		user := do.AdminLogin{Username: username}
-		err := DB.First(&user).Error
+		user := do.AdminLogin{}
+		err := DB.Where("username = ?", username).First(&user).Error
 		if err != nil {
 			if err == gorm.ErrRecordNotFound {
 				// 忽略记录不存在的错误，返回 nil 和 nil
@@ -91,8 +91,8 @@ func (ud *UserDao) GetUserLoginByUsername(username string) (do.UserTypeGetter, e
 		}
 		return &user, nil
 	case pkg.AuthUser:
-		user := do.UserLogin{Username: username}
-		err := DB.First(&user).Error
+		user := do.UserLogin{}
+		err := DB.Where("username = ?", username).First(&user).Error
 		if err != nil {
 			if err == gorm.ErrRecordNotFound {
 				// 忽略记录不存在的错误，返回 nil 和 nil
@@ -103,8 +103,8 @@ func (ud *UserDao) GetUserLoginByUsername(username string) (do.UserTypeGetter, e
 		}
 		return &user, nil
 	case pkg.AuthStaff:
-		user := do.StaffLogin{Username: username}
-		err := DB.First(&user).Error
+		user := do.StaffLogin{}
+		err := DB.Where("username = ?", username).First(&user).Error
 		if err != nil {
 			if err == gorm.ErrRecordNotFound {
 				// 忽略记录不存在的错误，返回 nil 和 nil
@@ -115,8 +115,8 @@ func (ud *UserDao) GetUserLoginByUsername(username string) (do.UserTypeGetter, e
 		}
 		return &user, nil
 	case pkg.AuthManager:
-		user := do.ManagerLogin{Username: username}
-		err := DB.First(&user).Error
+		user := do.ManagerLogin{}
+		err := DB.Where("username = ?", username).First(&user).Error
 		if err != nil {
 			if err == gorm.ErrRecordNotFound {
 				// 忽略记录不存在的错误，返回 nil 和 nil
@@ -127,8 +127,8 @@ func (ud *UserDao) GetUserLoginByUsername(username string) (do.UserTypeGetter, e
 		}
 		return &user, nil
 	case pkg.AuthFinance:
-		user := do.FinanceLogin{Username: username}
-		err := DB.First(&user).Error
+		user := do.FinanceLogin{}
+		err := DB.Where("username = ?", username).First(&user).Error
 		if err != nil {
 			if err == gorm.ErrRecordNotFound {
 				// 忽略记录不存在的错误，返回 nil 和 nil
@@ -139,8 +139,8 @@ func (ud *UserDao) GetUserLoginByUsername(username string) (do.UserTypeGetter, e
 		}
 		return &user, nil
 	case pkg.AuthTicketor:
-		user := do.TicketorLogin{Username: username}
-		err := DB.First(&user).Error
+		user := do.TicketorLogin{}
+		err := DB.Where("username = ?", username).First(&user).Error
 		if err != nil {
 			if err == gorm.ErrRecordNotFound {
 				// 忽略记录不存在的错误，返回 nil 和 nil
@@ -151,8 +151,8 @@ func (ud *UserDao) GetUserLoginByUsername(username string) (do.UserTypeGetter, e
 		}
 		return &user, nil
 	case pkg.AuthAccount:
-		user := do.AccountLogin{Username: username}
-		err := DB.First(&user).Error
+		user := do.AccountLogin{}
+		err := DB.Where("username = ?", username).First(&user).Error
 		if err != nil {
 			if err == gorm.ErrRecordNotFound {
 				// 忽略记录不存在的错误，返回 nil 和 nil
@@ -178,37 +178,37 @@ func (ud *UserDao) InsertUserLogin(username, password string) error {
 		}
 	case pkg.AuthUser:
 		user := do.UserLogin{Username: username, Password: password}
-		err := DB.First(&user).Error
-		if err!= nil {
+		err := DB.Create(&user).Error
+		if err != nil {
 			return err
 		}
 	case pkg.AuthStaff:
 		user := do.StaffLogin{Username: username, Password: password}
-		err := DB.First(&user).Error
+		err := DB.Create(&user).Error
 		if err != nil {
 			return err
 		}
 	case pkg.AuthManager:
 		user := do.ManagerLogin{Username: username, Password: password}
-		err := DB.First(&user).Error
+		err := DB.Create(&user).Error
 		if err != nil {
 			return err
 		}
 	case pkg.AuthFinance:
 		user := do.FinanceLogin{Username: username, Password: password}
-		err := DB.First(&user).Error
+		err := DB.Create(&user).Error
 		if err != nil {
 			return err
 		}
 	case pkg.AuthTicketor:
 		user := do.TicketorLogin{Username: username, Password: password}
-		err := DB.First(&user).Error
+		err := DB.Create(&user).Error
 		if err != nil {
 			return err
 		}
 	case pkg.AuthAccount:
 		user := do.AccountLogin{Username: username, Password: password}
-		err := DB.First(&user).Error
+		err := DB.Create(&user).Error
 		if err != nil {
 			return err
 		}
@@ -224,50 +224,50 @@ func (ud *UserDao) GetUserInfoByID(id int64) (do.UserInfoGetter, error) {
 	auth := ud.auth
 	switch auth {
 	case pkg.AuthAdmin:
-		user := do.AdminLogin{UserID: id}
-		err := DB.First(&user).Error
+		user := do.AdminLogin{}
+		err := DB.Where("user_id = ?", id).First(&user).Error
 		if err != nil {
 			return nil, err
 		}
 		return &user, nil
 	case pkg.AuthUser:
-		user := do.UserLogin{UserID: id}
-		err := DB.First(&user).Error
+		user := do.UserLogin{}
+		err := DB.Where("user_id = ?", id).First(&user).Error
 		if err != nil {
 			return nil, err
 		}
 		return &user, nil
 	case pkg.AuthStaff:
-		user := do.StaffLogin{UserID: id}
-		err := DB.First(&user).Error
+		user := do.StaffLogin{}
+		err := DB.Where("user_id = ?", id).First(&user).Error
 		if err != nil {
 			return nil, err
 		}
 		return &user, nil
 	case pkg.AuthManager:
-		user := do.ManagerLogin{UserID: id}
-		err := DB.First(&user).Error
+		user := do.ManagerLogin{}
+		err := DB.Where("user_id = ?", id).First(&user).Error
 		if err != nil {
 			return nil, err
 		}
 		return &user, nil
 	case pkg.AuthFinance:
-		user := do.FinanceLogin{UserID: id}
-		err := DB.First(&user).Error
+		user := do.FinanceLogin{}
+		err := DB.Where("user_id = ?", id).First(&user).Error
 		if err != nil {
 			return nil, err
 		}
 		return &user, nil
 	case pkg.AuthTicketor:
-		user := do.TicketorLogin{UserID: id}
-		err := DB.First(&user).Error
+		user := do.TicketorLogin{}
+		err := DB.Where("user_id = ?", id).First(&user).Error
 		if err != nil {
 			return nil, err
 		}
 		return &user, nil
 	case pkg.AuthAccount:
-		user := do.AccountLogin{UserID: id}
-		err := DB.First(&user).Error
+		user := do.AccountLogin{}
+		err := DB.Where("user_id = ?", id).First(&user).Error
 		if err != nil {
 			return nil, err
 		}

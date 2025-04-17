@@ -49,7 +49,7 @@ func main() {
 	r := api.InitRouter()
 
 	srv := &http.Server{
-		Addr:    fmt.Sprintf("localhost:%d", config.Conf.AppConfig.Port),
+		Addr:    fmt.Sprintf("0.0.0.0:%d", config.Conf.AppConfig.Port),
 		Handler: r,
 	}
 
