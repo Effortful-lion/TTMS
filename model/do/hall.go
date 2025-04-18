@@ -9,5 +9,7 @@ type Hall struct {
 	HallCol  int    `gorm:"column:hall_col;type:int;not null"`                  // 列数
 	HallTotal int    `gorm:"column:hall_total;type:int;not null"`               // 座位总数
 
-	// 依赖 演出计划 一对多： 一个演出计划 -- 多个演出厅
+	// 依赖 演出计划 一对多： 一个演出计划 -- 一个演出厅；一个演出厅 -- 多个演出计划
+	Plans []Plan `gorm:"foreignKey:HallID"`
+	Seats []Seat `gorm:"foreignKey:HallID"`
 }

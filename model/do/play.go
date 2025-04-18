@@ -17,6 +17,9 @@ type Play struct {
 	PlayStartTime 	time.Time			`gorm:"type:datetime"`
 	PlayEndTime		time.Time			`gorm:"type:datetime"`
 	PlayPrice 		float64				`gorm:"type:float"`
-	PyayStatu 		PlayStatu			`gorm:"type:tinyint"`
+	PlayStatu 		PlayStatu			`gorm:"type:tinyint"`
+
+	// 依赖关系：一个剧目对应多个演出计划，一个演出计划对应多个剧目（一对多）
+	Plans            []Plan				 `gorm:"foreignKey:PlayID"`
 }
 

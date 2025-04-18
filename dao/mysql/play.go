@@ -51,7 +51,7 @@ func (*PlayDao)UpdatePlay(play_id int,play_name, play_description string, play_s
 		PlayStartTime: play_start,
 		PlayEndTime: play_end,
 		PlayPrice: play_price,
-		PyayStatu: do.PlayStatu(play_status),	
+		PlayStatu: do.PlayStatu(play_status),	
 	}
 	return DB.Save(play).Error
 }

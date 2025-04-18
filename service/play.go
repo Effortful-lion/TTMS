@@ -28,7 +28,7 @@ func (*PlayService) GetPlay(play_id int64) (data *dto.PlayInfoResp, err error) {
 		PlayStartTime:   play.PlayStartTime,
 		PlayEndTime:     play.PlayEndTime,
 		PlayPrice:       play.PlayPrice,
-		PlayStatu:       dto.PlayStatu(play.PyayStatu),	
+		PlayStatu:       dto.PlayStatu(play.PlayStatu),	
 	}, nil
 }
 
@@ -50,7 +50,7 @@ func (*PlayService) GetPlayList() (data *dto.PlayListResp, err error) {
 			PlayStartTime:   play.PlayStartTime,
 			PlayEndTime:     play.PlayEndTime,
 			PlayPrice:       play.PlayPrice,
-			PlayStatu:       dto.PlayStatu(play.PyayStatu),	
+			PlayStatu:       dto.PlayStatu(play.PlayStatu),	
 		}
 		playList.Plays = append(playList.Plays, play_info)
 	}
