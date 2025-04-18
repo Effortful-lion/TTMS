@@ -24,6 +24,196 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/hall": {
+            "get": {
+                "description": "查询所有演出厅",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "演出厅管理"
+                ],
+                "summary": "查询所有演出厅",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer 用户令牌",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/resp.ResponseData"
+                        }
+                    }
+                }
+            },
+            "put": {
+                "description": "更新演出厅",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "演出厅管理"
+                ],
+                "summary": "更新演出厅",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer 用户令牌",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "演出厅信息",
+                        "name": "object",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.HallUpdateReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/resp.ResponseData"
+                        }
+                    }
+                }
+            },
+            "post": {
+                "description": "添加演出厅",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "演出厅管理"
+                ],
+                "summary": "添加演出厅",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer 用户令牌",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "演出厅信息",
+                        "name": "object",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.HallIsertReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/resp.ResponseData"
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "description": "删除演出厅",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "演出厅管理"
+                ],
+                "summary": "删除演出厅",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer 用户令牌",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "演出厅id",
+                        "name": "hall_id",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/resp.ResponseData"
+                        }
+                    }
+                }
+            }
+        },
+        "/hall/{hall_id}": {
+            "get": {
+                "description": "查询所有演出厅",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "演出厅管理"
+                ],
+                "summary": "查询所有演出厅",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer 用户令牌",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "演出厅id",
+                        "name": "hall_id",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/resp.ResponseData"
+                        }
+                    }
+                }
+            }
+        },
         "/login": {
             "post": {
                 "description": "登录接口",
@@ -68,6 +258,15 @@ const docTemplate = `{
                     "剧目管理"
                 ],
                 "summary": "获得所有剧目",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer 用户令牌",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "成功",
@@ -90,6 +289,13 @@ const docTemplate = `{
                 ],
                 "summary": "更新剧目",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer 用户令牌",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
                     {
                         "description": "剧目更新信息",
                         "name": "object",
@@ -122,6 +328,13 @@ const docTemplate = `{
                 ],
                 "summary": "添加剧目",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer 用户令牌",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
                     {
                         "description": "剧目信息",
                         "name": "object",
@@ -157,6 +370,13 @@ const docTemplate = `{
                 "summary": "获得特定剧目",
                 "parameters": [
                     {
+                        "type": "string",
+                        "description": "Bearer 用户令牌",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
                         "description": "剧目id",
                         "name": "play_id",
                         "in": "body",
@@ -188,6 +408,13 @@ const docTemplate = `{
                 ],
                 "summary": "删除剧目",
                 "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer 用户令牌",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
                     {
                         "description": "剧目id",
                         "name": "play_id",
@@ -249,6 +476,15 @@ const docTemplate = `{
                     "全局接口"
                 ],
                 "summary": "获取用户信息接口",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer 用户令牌",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "用户信息",
@@ -261,6 +497,51 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "dto.HallIsertReq": {
+            "type": "object",
+            "required": [
+                "hall_col",
+                "hall_name",
+                "hall_row"
+            ],
+            "properties": {
+                "hall_col": {
+                    "description": "列数",
+                    "type": "integer"
+                },
+                "hall_name": {
+                    "description": "演出厅名称，唯一",
+                    "type": "string"
+                },
+                "hall_row": {
+                    "description": "行数",
+                    "type": "integer"
+                }
+            }
+        },
+        "dto.HallUpdateReq": {
+            "type": "object",
+            "required": [
+                "hall_col",
+                "hall_id",
+                "hall_name",
+                "hall_row"
+            ],
+            "properties": {
+                "hall_col": {
+                    "type": "integer"
+                },
+                "hall_id": {
+                    "type": "integer"
+                },
+                "hall_name": {
+                    "type": "string"
+                },
+                "hall_row": {
+                    "type": "integer"
+                }
+            }
+        },
         "dto.PlayInsertReq": {
             "type": "object",
             "required": [

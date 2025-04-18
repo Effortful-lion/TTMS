@@ -2,6 +2,7 @@ package service
 
 import (
 	"TTMS/dao/mysql"
+	"TTMS/model/dto"
 	"errors"
 )
 
@@ -18,7 +19,7 @@ func (u *UserService) SignUp(username, password string) (err error) {
 	// 定义接口变量
 	userdao := mysql.NewUserDao(auth)
 	// 统一处理用户注册逻辑
-	user, err := userdao.GetUserLoginByUsername(username)
+	user, err := userdao.SelectUserLoginByUsername(username)
 	if err != nil {
 		return errors.New("查询数据库失败")
 	}
@@ -38,7 +39,7 @@ func (u *UserService) Login(username, password string) (data int64, err error) {
 	userdao := mysql.NewUserDao(auth)
 
 	// 从数据库中查询用户名是否存在
-	user, err := userdao.GetUserLoginByUsername(username)
+	user, err := userdao.SelectUserLoginByUsername(username)
 	if err != nil {
 		return 0, errors.New("查询数据库失败")
 	}
@@ -52,12 +53,12 @@ func (u *UserService) Login(username, password string) (data int64, err error) {
 	return 0, errors.New("用户名或密码错误")
 }
 
-func (u *UserService) GetUserInfo(user_id int64) (data any, err error) {
+func (u *UserService) GetUserInfo(user_id int64) (data *dto.UserInfoResp, err error) {
 	auth := u.auth
 	// 定义接口变量
 	userdao := mysql.NewUserDao(auth)
 	// 从数据库中查询用户信息
-	user, err := userdao.GetUserInfoByID(user_id)
+	user, err := userdao.SelectUserInfoByID(user_id)
 	if err!= nil {
 		return nil, errors.New("查询数据库失败")
 	}
@@ -65,5 +66,11 @@ func (u *UserService) GetUserInfo(user_id int64) (data any, err error) {
 		return nil, errors.New("用户不存在")
 	}
 
-	return user, nil
+	userinfo := &dto.UserInfoResp{
+		UserID: user.GetUserID(),
+		Username: user.GetUsername(),
+		Auth: u.auth,	
+	}
+
+	return userinfo, nil
 }

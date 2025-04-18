@@ -24,15 +24,23 @@ func (*PlayDao)InsertPlay(play_name, play_description string, play_start, play_e
 }
 
 func (*PlayDao)SelectAllPlay() ([]*do.Play, error) {
-	var plays []*do.Play
+	var plays []do.Play
 	err := DB.Find(&plays).Error
-	return plays, err
+    if err != nil {
+        return nil, err
+    }
+    // 将非指针切片转换为指针切片
+    playPtrs := make([]*do.Play, len(plays))
+    for i := range plays {
+        playPtrs[i] = &plays[i]
+    }
+    return playPtrs, nil
 }
 
 func (*PlayDao)SelectPlayByID(play_id int64) (*do.Play, error) {
-	var play *do.Play
+	var play do.Play
 	err := DB.Where("play_id = ?", play_id).First(&play).Error	
-	return play, err
+	return &play, err
 }
 
 func (*PlayDao)UpdatePlay(play_id int,play_name, play_description string, play_start, play_end time.Time, play_price float64, play_status int) error {

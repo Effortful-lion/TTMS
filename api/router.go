@@ -27,7 +27,7 @@ func InitRouter() *gin.Engine {
 
 	r.POST("/signup", controller.NewUserController().SignUpHandler) // 用户注册
 	r.POST("/login", controller.NewUserController().LoginHandler)   // 用户登录
-	r.POST("/userinfo", middleware.JWTAuthMiddleware(),controller.NewUserController().GetUserInfoHandler) // 
+	r.POST("/userinfo", middleware.JWTNoAuthMiddleware(),controller.NewUserController().GetUserInfoHandler) // 用户信息
 
 	// 普通用户权限模块
 	userGroup := r.Group("/user")
@@ -50,6 +50,13 @@ func InitRouter() *gin.Engine {
 			auth := controller.GetCurrentUserAuthority(ctx)
 			ctx.JSON(200, gin.H{"auth": auth})
 		})
+
+		// 演出厅增删改查
+		adminGroup.POST("/hall", controller.NewHallController().AddHallHandler)
+		adminGroup.DELETE("/hall/:hall_id", controller.NewHallController().DeleteHallHandler)
+		adminGroup.PUT("/hall", controller.NewHallController().UpdateHallHandler)
+		adminGroup.GET("/hall", controller.NewHallController().GetHallListHandler)
+		adminGroup.GET("/hall/:hall_id", controller.NewHallController().GetHallHandler)
 	}
 
 	// 运营经理权限模块

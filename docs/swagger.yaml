@@ -1,4 +1,36 @@
 definitions:
+  dto.HallIsertReq:
+    properties:
+      hall_col:
+        description: 列数
+        type: integer
+      hall_name:
+        description: 演出厅名称，唯一
+        type: string
+      hall_row:
+        description: 行数
+        type: integer
+    required:
+    - hall_col
+    - hall_name
+    - hall_row
+    type: object
+  dto.HallUpdateReq:
+    properties:
+      hall_col:
+        type: integer
+      hall_id:
+        type: integer
+      hall_name:
+        type: string
+      hall_row:
+        type: integer
+    required:
+    - hall_col
+    - hall_id
+    - hall_name
+    - hall_row
+    type: object
   dto.PlayInsertReq:
     properties:
       play_description:
@@ -149,6 +181,132 @@ info:
   title: 后端系统 API在线测试文档
   version: "1.0"
 paths:
+  /hall:
+    delete:
+      consumes:
+      - application/json
+      description: 删除演出厅
+      parameters:
+      - description: Bearer 用户令牌
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 演出厅id
+        in: body
+        name: hall_id
+        required: true
+        schema:
+          type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/resp.ResponseData'
+      summary: 删除演出厅
+      tags:
+      - 演出厅管理
+    get:
+      consumes:
+      - application/json
+      description: 查询所有演出厅
+      parameters:
+      - description: Bearer 用户令牌
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/resp.ResponseData'
+      summary: 查询所有演出厅
+      tags:
+      - 演出厅管理
+    post:
+      consumes:
+      - application/json
+      description: 添加演出厅
+      parameters:
+      - description: Bearer 用户令牌
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 演出厅信息
+        in: body
+        name: object
+        required: true
+        schema:
+          $ref: '#/definitions/dto.HallIsertReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/resp.ResponseData'
+      summary: 添加演出厅
+      tags:
+      - 演出厅管理
+    put:
+      consumes:
+      - application/json
+      description: 更新演出厅
+      parameters:
+      - description: Bearer 用户令牌
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 演出厅信息
+        in: body
+        name: object
+        required: true
+        schema:
+          $ref: '#/definitions/dto.HallUpdateReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/resp.ResponseData'
+      summary: 更新演出厅
+      tags:
+      - 演出厅管理
+  /hall/{hall_id}:
+    get:
+      consumes:
+      - application/json
+      description: 查询所有演出厅
+      parameters:
+      - description: Bearer 用户令牌
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 演出厅id
+        in: body
+        name: hall_id
+        required: true
+        schema:
+          type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/resp.ResponseData'
+      summary: 查询所有演出厅
+      tags:
+      - 演出厅管理
   /login:
     post:
       consumes:
@@ -174,6 +332,12 @@ paths:
       consumes:
       - application/json
       description: 获得所有剧目
+      parameters:
+      - description: Bearer 用户令牌
+        in: header
+        name: Authorization
+        required: true
+        type: string
       produces:
       - application/json
       responses:
@@ -189,6 +353,11 @@ paths:
       - application/json
       description: 添加剧目
       parameters:
+      - description: Bearer 用户令牌
+        in: header
+        name: Authorization
+        required: true
+        type: string
       - description: 剧目信息
         in: body
         name: object
@@ -210,6 +379,11 @@ paths:
       - application/json
       description: 更新剧目
       parameters:
+      - description: Bearer 用户令牌
+        in: header
+        name: Authorization
+        required: true
+        type: string
       - description: 剧目更新信息
         in: body
         name: object
@@ -232,6 +406,11 @@ paths:
       - application/json
       description: 删除剧目
       parameters:
+      - description: Bearer 用户令牌
+        in: header
+        name: Authorization
+        required: true
+        type: string
       - description: 剧目id
         in: body
         name: play_id
@@ -253,6 +432,11 @@ paths:
       - application/json
       description: 获得特定剧目
       parameters:
+      - description: Bearer 用户令牌
+        in: header
+        name: Authorization
+        required: true
+        type: string
       - description: 剧目id
         in: body
         name: play_id
@@ -294,6 +478,12 @@ paths:
       consumes:
       - application/json
       description: 获取用户信息接口
+      parameters:
+      - description: Bearer 用户令牌
+        in: header
+        name: Authorization
+        required: true
+        type: string
       responses:
         "200":
           description: 用户信息

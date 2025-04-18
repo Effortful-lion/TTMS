@@ -20,3 +20,9 @@ type UserLoginResp struct {
 	Auth   string `json:"auth"`		// 用户权限
 	Token string `json:"token"` 	// 登录成功后返回的token
 }
+
+type UserInfoResp struct {
+	UserID int64  `json:"user_id"`  // 用户ID
+	Username string `json:"username"` // 用户名
+	Auth   string `json:"auth"`		// 用户权限
+}

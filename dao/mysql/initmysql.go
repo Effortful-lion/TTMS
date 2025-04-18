@@ -60,5 +60,8 @@ func MigrateTables() error {
 		&do.StaffInfo{},
 		&do.ManagerInfo{},
 		&do.Play{},
+		&do.Hall{},
+		&do.Seat{},
+		&do.Ticket{},
 	)	
 }

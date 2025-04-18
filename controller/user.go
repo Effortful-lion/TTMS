@@ -157,7 +157,7 @@ func (*UserController) LoginHandler(c *gin.Context) {
 // @Tags 全局接口
 // @Accept json
 // @Produc json
-// @Header 200 {string} Token "用户token"
+// @Param Authorization header string true "Bearer 用户令牌"
 // @Success 200 {object} resp.ResponseData "用户信息"
 // @Router /userinfo [post]
 func (*UserController) GetUserInfoHandler(c *gin.Context) {

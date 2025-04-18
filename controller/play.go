@@ -21,6 +21,7 @@ func NewPlayController() *PlayController {
 // @Tags 剧目管理
 // @Accept application/json
 // @Produce application/json
+// @Param Authorization header string true "Bearer 用户令牌"
 // @Param object body dto.PlayInsertReq true "剧目信息"
 // @Success 200 {object} resp.ResponseData "成功"
 // @Router /play [post]
@@ -48,6 +49,7 @@ func (*PlayController) AddPlayHandler(c *gin.Context) {
 // @Tags 剧目管理
 // @Accept application/json
 // @Produce application/json
+// @Param Authorization header string true "Bearer 用户令牌"
 // @Param play_id body int true "剧目id"
 // @Success 200 {object} resp.ResponseData "成功"
 // @Router /play/{play_id} [delete]
@@ -71,6 +73,7 @@ func (*PlayController) DeletePlayHandler(c *gin.Context) {
 // @Tags 剧目管理
 // @Accept application/json
 // @Produce application/json
+// @Param Authorization header string true "Bearer 用户令牌"
 // @Param object body dto.PlayUpdateReq true "剧目更新信息"
 // @Success 200 {object} resp.ResponseData "成功"
 // @Router /play [put]
@@ -100,6 +103,7 @@ func (*PlayController) UpdatePlayHandler(c *gin.Context) {
 // @Tags 剧目管理
 // @Accept application/json
 // @Produce application/json
+// @Param Authorization header string true "Bearer 用户令牌"
 // @Success 200 {object} resp.ResponseData "成功"
 // @Router /play [get]
 func (*PlayController) GetPlayListHandler(c *gin.Context) {
@@ -116,6 +120,7 @@ func (*PlayController) GetPlayListHandler(c *gin.Context) {
 // @Tags 剧目管理
 // @Accept application/json
 // @Produce application/json
+// @Param Authorization header string true "Bearer 用户令牌"
 // @Param play_id body int true "剧目id"
 // @Success 200 {object} resp.ResponseData "成功"
 // @Router /play/{play_id} [get]
