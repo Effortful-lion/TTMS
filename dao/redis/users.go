@@ -22,24 +22,14 @@ const (
 // 将生成的token存储到redis中
 func SetUserToken(token string, ID int) error {
 	var TokenExpireDuration = viper.GetInt("auth.expire")
-	return Rdb.Set(context.Background(),"token_user" + fmt.Sprint(ID),token,time.Hour * time.Duration(TokenExpireDuration)).Err()
+	fmt.Println("TokenExpireDuration:",TokenExpireDuration)
+	return Rdb.Set(context.Background(),"token_user" + fmt.Sprint(ID),token,time.Second * time.Duration(TokenExpireDuration)).Err()
 }
 
 // 通过用户ID得到用户token
 func GetUserToken(ID int) (token string,err error){
 	return Rdb.Get(context.Background(),"token_user" + fmt.Sprint(ID)).Result()
 }
-
-// // 通过token得到用户ID
-// func GetUserID() (ID int,err error){
-// 	token, _ := GetUserToken(ID)
-// 	// 去掉前缀
-// 	useridstr,found := strings.CutPrefix(token,"token_user")
-// 	if !found {
-// 		return 0,errors.New("token error")
-// 	}
-// 	return  strconv.Atoi(useridstr)
-// }
 
 // // 删除用户的登录token
 // func DelUserToken(userID int) error {
@@ -51,24 +41,71 @@ func GetUserToken(ID int) (token string,err error){
 // 	return nil
 // }
 
-// // 删除用户的 忘记密码的修改 token
-// func DelUserToken2(email string) error {
-// 	key := "token" + email
-// 	result := Rdb.Del(context.Background(),key)
-// 	if result.Err() != nil {
-// 		return result.Err()
-// 	}
-// 	return nil
-// }
-
 //-----------------------------------------Admin--------------------------------------------
 // 将生成的token存储到redis中
 func SetAdminToken(token string, ID int) error {
 	var TokenExpireDuration = viper.GetInt("auth.expire")
-	return Rdb.Set(context.Background(),TokenAdmin + fmt.Sprint(ID),token,time.Hour * time.Duration(TokenExpireDuration)).Err()
+	return Rdb.Set(context.Background(),TokenAdmin + fmt.Sprint(ID),token,time.Second * time.Duration(TokenExpireDuration)).Err()
 }
 
 // 通过用户ID得到用户token
 func GetAdminToken(ID int) (token string,err error){
 	return Rdb.Get(context.Background(),TokenAdmin + fmt.Sprint(ID)).Result()
+}
+
+//----------------------------------------Manager-------------------------------------------
+// 将生成的token存储到redis中
+func SetManagerToken(token string, ID int) error {
+	var TokenExpireDuration = viper.GetInt("auth.expire")
+	return Rdb.Set(context.Background(),TokenManager + fmt.Sprint(ID),token,time.Second * time.Duration(TokenExpireDuration)).Err()
+}
+
+// 通过用户ID得到用户token
+func GetManagerToken(ID int) (token string,err error){
+	return Rdb.Get(context.Background(),TokenManager + fmt.Sprint(ID)).Result()
+}
+
+//----------------------------------------Staff-------------------------------------------
+// 将生成的token存储到redis中
+func SetStaffToken(token string, ID int) error {
+	var TokenExpireDuration = viper.GetInt("auth.expire")
+	return Rdb.Set(context.Background(),TokenStaff + fmt.Sprint(ID),token,time.Second * time.Duration(TokenExpireDuration)).Err()
+}
+
+// 通过用户ID得到用户token
+func GetStaffToken(ID int) (token string,err error){
+	return Rdb.Get(context.Background(),TokenStaff + fmt.Sprint(ID)).Result()
+}
+//----------------------------------------Finance-------------------------------------------
+// 将生成的token存储到redis中
+func SetFinanceToken(token string, ID int) error {
+	var TokenExpireDuration = viper.GetInt("auth.expire")
+	return Rdb.Set(context.Background(),TokenFinance + fmt.Sprint(ID),token,time.Second * time.Duration(TokenExpireDuration)).Err()
+}
+
+// 通过用户ID得到用户token
+func GetFinanceToken(ID int) (token string,err error){
+	return Rdb.Get(context.Background(),TokenFinance + fmt.Sprint(ID)).Result()
+}
+//----------------------------------------Account-------------------------------------------
+// 将生成的token存储到redis中
+func SetAccountToken(token string, ID int) error {
+	var TokenExpireDuration = viper.GetInt("auth.expire")
+	return Rdb.Set(context.Background(),TokenAccount + fmt.Sprint(ID),token,time.Second * time.Duration(TokenExpireDuration)).Err()
+}
+
+// 通过用户ID得到用户token
+func GetAccountToken(ID int) (token string,err error){
+	return Rdb.Get(context.Background(),TokenAccount + fmt.Sprint(ID)).Result()
+}
+//----------------------------------------Ticketor-------------------------------------------
+// 将生成的token存储到redis中
+func SetTicketorToken(token string, ID int) error {
+	var TokenExpireDuration = viper.GetInt("auth.expire")
+	return Rdb.Set(context.Background(),TokenTicketor + fmt.Sprint(ID),token,time.Second * time.Duration(TokenExpireDuration)).Err()
+}
+
+// 通过用户ID得到用户token
+func GetTicketorToken(ID int) (token string,err error){
+	return Rdb.Get(context.Background(),TokenTicketor + fmt.Sprint(ID)).Result()
 }

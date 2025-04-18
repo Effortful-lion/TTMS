@@ -14,6 +14,7 @@ var codeMsgMap = map[ResCode]string {
 	CodeUserExist: "用户已存在",
 	CodeUserNotExist: "用户不存在",
 	CodeInvalidPassword: "密码错误",
+	CodeNoAuth: "没有权限",
 }
 
 // 系统响应状态码
@@ -22,6 +23,7 @@ const (
 	CodeInvalidParams                 // 参数错误
 	CodeError                         // 服务器内部错误
 	CodeNeedLogin                     // 需要登录
+	CodeNoAuth                        // 没有权限
 )
 
 // 用户业务状态码

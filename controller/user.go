@@ -112,8 +112,38 @@ func (*UserController) LoginHandler(c *gin.Context) {
 			resp.ResponseError(c, resp.CodeError)
 			return
 		}
+	case pkg.AuthManager:
+		err = redis.SetManagerToken(token, int(user_id))
+		if err!= nil {
+			resp.ResponseError(c, resp.CodeError)
+			return
+		}
+	case pkg.AuthStaff:
+		err = redis.SetStaffToken(token, int(user_id))
+		if err!= nil {
+			resp.ResponseError(c, resp.CodeError)
+			return
+		}
+	case pkg.AuthFinance:
+		err = redis.SetFinanceToken(token, int(user_id))
+		if err!= nil {
+			resp.ResponseError(c, resp.CodeError)
+			return
+		}
+	case pkg.AuthAccount:
+		err = redis.SetAccountToken(token, int(user_id))
+		if err!= nil {
+			resp.ResponseError(c, resp.CodeError)
+			return
+		}
+	case pkg.AuthTicketor:
+		err = redis.SetTicketorToken(token, int(user_id))
+		if err!= nil {
+			resp.ResponseError(c, resp.CodeError)
+			return			
+		}
 	default:
-		resp.ResponseErrorWithMsg(c, resp.CodeError, "无权限")
+		resp.ResponseErrorWithMsg(c, resp.CodeError, "无该权限的登录")
 		return
 	}
 	

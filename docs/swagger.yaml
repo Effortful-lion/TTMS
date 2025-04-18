@@ -1,4 +1,58 @@
 definitions:
+  dto.PlayInsertReq:
+    properties:
+      play_description:
+        type: string
+      play_end_time:
+        type: string
+      play_name:
+        type: string
+      play_price:
+        type: number
+      play_start_time:
+        type: string
+    required:
+    - play_description
+    - play_end_time
+    - play_name
+    - play_price
+    - play_start_time
+    type: object
+  dto.PlayStatu:
+    enum:
+    - 0
+    - 1
+    - 2
+    type: integer
+    x-enum-varnames:
+    - PlayStatusBefore
+    - PlayStatusDuring
+    - PlayStatusAfter
+  dto.PlayUpdateReq:
+    properties:
+      play_description:
+        type: string
+      play_end_time:
+        type: string
+      play_id:
+        type: integer
+      play_name:
+        type: string
+      play_price:
+        type: number
+      play_start_time:
+        type: string
+      play_statu:
+        $ref: '#/definitions/dto.PlayStatu'
+    required:
+    - play_description
+    - play_end_time
+    - play_id
+    - play_name
+    - play_price
+    - play_start_time
+    - play_statu
+    type: object
   dto.UserLoginReq:
     properties:
       auth:
@@ -47,6 +101,7 @@ definitions:
     - 1001
     - 1002
     - 1003
+    - 1004
     - 2000
     - 2001
     - 2002
@@ -56,6 +111,7 @@ definitions:
       CodeInvalidParams: 参数错误
       CodeInvalidPassword: 密码错误
       CodeNeedLogin: 需要登录
+      CodeNoAuth: 没有权限
       CodeSuccess: 成功
       CodeUserExist: 用户已存在
       CodeUserNotExist: 用户不存在
@@ -64,6 +120,7 @@ definitions:
     - CodeInvalidParams
     - CodeError
     - CodeNeedLogin
+    - CodeNoAuth
     - CodeUserExist
     - CodeUserNotExist
     - CodeInvalidPassword
@@ -112,6 +169,106 @@ paths:
       summary: 登录接口
       tags:
       - 全局接口
+  /play:
+    get:
+      consumes:
+      - application/json
+      description: 获得所有剧目
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/resp.ResponseData'
+      summary: 获得所有剧目
+      tags:
+      - 剧目管理
+    post:
+      consumes:
+      - application/json
+      description: 添加剧目
+      parameters:
+      - description: 剧目信息
+        in: body
+        name: object
+        required: true
+        schema:
+          $ref: '#/definitions/dto.PlayInsertReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/resp.ResponseData'
+      summary: 添加剧目
+      tags:
+      - 剧目管理
+    put:
+      consumes:
+      - application/json
+      description: 更新剧目
+      parameters:
+      - description: 剧目更新信息
+        in: body
+        name: object
+        required: true
+        schema:
+          $ref: '#/definitions/dto.PlayUpdateReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/resp.ResponseData'
+      summary: 更新剧目
+      tags:
+      - 剧目管理
+  /play/{play_id}:
+    delete:
+      consumes:
+      - application/json
+      description: 删除剧目
+      parameters:
+      - description: 剧目id
+        in: body
+        name: play_id
+        required: true
+        schema:
+          type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/resp.ResponseData'
+      summary: 删除剧目
+      tags:
+      - 剧目管理
+    get:
+      consumes:
+      - application/json
+      description: 获得特定剧目
+      parameters:
+      - description: 剧目id
+        in: body
+        name: play_id
+        required: true
+        schema:
+          type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/resp.ResponseData'
+      summary: 获得特定剧目
+      tags:
+      - 剧目管理
   /signup:
     post:
       consumes:

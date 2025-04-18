@@ -42,8 +42,11 @@ func (u *UserService) Login(username, password string) (data int64, err error) {
 	if err != nil {
 		return 0, errors.New("查询数据库失败")
 	}
+	if user == nil {
+		return 0, errors.New("用户名不存在")
+	}
 	// 如果存在，比较密码是否正确
-	if user != nil && user.GetPassword() == password {
+	if user.GetPassword() == password {
 		return user.GetUserID(), nil
 	}
 	return 0, errors.New("用户名或密码错误")

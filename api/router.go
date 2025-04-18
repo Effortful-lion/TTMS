@@ -27,7 +27,7 @@ func InitRouter() *gin.Engine {
 
 	r.POST("/signup", controller.NewUserController().SignUpHandler) // 用户注册
 	r.POST("/login", controller.NewUserController().LoginHandler)   // 用户登录
-	r.POST("/userinfo", middleware.JWTAuthMiddleware(),controller.NewUserController().GetUserInfoHandler)
+	r.POST("/userinfo", middleware.JWTAuthMiddleware(),controller.NewUserController().GetUserInfoHandler) // 
 
 	// 普通用户权限模块
 	userGroup := r.Group("/user")
@@ -43,7 +43,7 @@ func InitRouter() *gin.Engine {
 	
 	// 管理员权限模块
 	adminGroup := r.Group("/admin")
-	adminGroup.Use(middleware.JWTAuthMiddleware())
+	adminGroup.Use(middleware.JWTAuthMiddleware(), middleware.AdminAuthMiddleware())
 	{
 		// test 路由
 		adminGroup.GET("/auth", func(ctx *gin.Context) {
@@ -52,11 +52,22 @@ func InitRouter() *gin.Engine {
 		})
 	}
 
-	// 用户模块
-	// userGroup := r.Group("/user")
-	// {
-		
-	// }
+	// 运营经理权限模块
+	managerGroup := r.Group("/manager")
+	managerGroup.Use(middleware.JWTAuthMiddleware(), middleware.ManagerAuthMiddleware())              
+	{
+		// test 路由
+		managerGroup.GET("/auth", func(ctx *gin.Context) {
+			auth := controller.GetCurrentUserAuthority(ctx)
+			ctx.JSON(200, gin.H{"auth": auth})
+		})
+		// 剧目增删改查
+		managerGroup.POST("/play", controller.NewPlayController().AddPlayHandler)
+		managerGroup.DELETE("/play/:play_id", controller.NewPlayController().DeletePlayHandler)
+		managerGroup.PUT("/play", controller.NewPlayController().UpdatePlayHandler)
+		managerGroup.GET("/play", controller.NewPlayController().GetPlayListHandler)
+		managerGroup.GET("/play/:play_id", controller.NewPlayController().GetPlayHandler)
+	}
 
 
 
