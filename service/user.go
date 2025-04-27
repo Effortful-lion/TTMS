@@ -20,6 +20,8 @@ func (u *UserService) SignUp(username, password string) (err error) {
 	userdao := mysql.NewUserDao(auth)
 	// 统一处理用户注册逻辑
 	user, err := userdao.SelectUserLoginByUsername(username)
+	// userdao := mysql.NewUserFactory(auth).GetUserDao()
+	// user, err := userdao.SelectUserLoginByUsername(username)
 	if err != nil {
 		return errors.New("查询数据库失败")
 	}

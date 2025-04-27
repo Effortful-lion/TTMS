@@ -6,16 +6,8 @@ import (
 	"TTMS/dao/mysql"
 	"TTMS/dao/redis"
 	_ "TTMS/docs"
-	"context"
 	"fmt"
-	"net/http"
-	"os"
-	"os/signal"
-	"syscall"
-	"time"
-
-	"github.com/gin-gonic/gin"
-	"log"
+	"sync"
 )
 
 // @title 后端系统 API在线测试文档
@@ -48,27 +40,28 @@ func main() {
 	// 初始化路由
 	r := api.InitRouter()
 
-	srv := &http.Server{
-		Addr:    fmt.Sprintf("0.0.0.0:%d", config.Conf.AppConfig.Port),
-		Handler: r,
-	}
+	var wg sync.WaitGroup
+	wg.Add(2)
 
-	// 优雅关闭
-	go func(*gin.Engine, *http.Server) {
-		log.Printf("server listening addr: %s\n", srv.Addr)
-		if err := srv.ListenAndServe(); err!= nil && err!= http.ErrServerClosed {
-			fmt.Println(err)
-		}
-	}(r, srv)
-	quit := make(chan os.Signal, 1)
-		signal.Notify(quit, syscall.SIGINT, syscall.SIGTERM)
-		<-quit
-		// 等待两秒，确保所有请求都处理完
-		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
-		if err := srv.Shutdown(ctx); err!= nil {
-			fmt.Println(err)
-		}
-		// cancel() 函数用于主动取消通过`context.WithTimeout` 创建的上下文及其关联资源
-		defer cancel()
-		fmt.Println("Shutdown Server...")
+	// http 服务
+	go func ()  {
+		defer wg.Done()
+		port := config.Conf.AppConfig.HttpPort
+	    if err := r.Run(fmt.Sprintf(":%d", port)); err!= nil {
+			fmt.Printf("run server failed:%v\n",err)
+			return
+		}	
+	}()
+
+	// https 服务
+	go func ()  {
+		defer wg.Done()
+		port := config.Conf.AppConfig.HttpsPort
+	    if err := r.RunTLS(fmt.Sprintf(":%d",port), "./https/server.pem", "./https/server.key"); err!= nil {
+			fmt.Printf("run server failed:%v\n",err)
+			return
+	    }	
+	}()
+
+	wg.Wait()
 }

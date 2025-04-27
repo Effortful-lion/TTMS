@@ -14,7 +14,9 @@ type Config struct {
 }
 
 type AppConfig struct {
-	Port int `mapstructure:"port"`
+	Name string `mapstructure:"name"`
+	HttpPort int `mapstructure:"http"`
+	HttpsPort int `mapstructure:"https"`
 }
 
 type MysqlConfig struct {

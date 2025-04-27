@@ -1,0 +1,244 @@
+package mysql
+
+// 权当作是一次设计练习吧...
+
+// 基于工厂模式，对不同的用户类型进行不同的操作
+
+import (
+	"TTMS/model/do"
+	"TTMS/pkg"
+	"errors"
+
+	"gorm.io/gorm"
+)
+
+// --------------------------------User注册表-----------------------------------
+
+// mysql.NewUserFactory(auth).GetUserDao() 就可以返回具有不同值的 UserDao 的 接口
+// UserDaoInterface.SelectUserLoginByID(id) return do.UserGetter 通过 接口变量中存储的不同类型的值 调用对应类型的方法 返回对应类型的结构体的接口变量
+// 设计缺陷：就是所有角色都要实现接口定义的方法（少则报错、多则没用）
+// 但是在角色基本信息的场景下，信息格式基本相同
+
+// 但是其实有一个方式可以进行扩展：
+// 可以为每一个角色单独设计一个接口，而 UserDaoInterface 作为公共接口，从而实现接口方法的扩展
+// 至于 如何 处理 GetUserDao 返回的  接口类型 ，我们可以使用 类型断言 进行类型转换（可以将类型断言部分用函数封装起来）实现链式调用
+
+// 设计一个 角色工厂 ，根据不同的角色返回
+type UserFactory struct{
+	auth string
+}
+
+func NewUserFactory(auth string) *UserFactory {
+	return &UserFactory{auth: auth}
+}
+
+func (uf *UserFactory) GetUserDao() UserDaoInterface {
+	auth := uf.auth
+	switch auth {
+	case pkg.AuthAdmin:
+		return &AdminDao2{}
+	case pkg.AuthUser:
+		return &UserDao2{}
+	case pkg.AuthStaff:
+		return &StaffDao2{}
+	case pkg.AuthManager:
+		return &ManageDao2{}
+	case pkg.AuthFinance:
+		return &FinanceDao2{}
+	case pkg.AuthTicketor:
+		return &TicketorDao2{}
+	case pkg.AuthAccount:
+		return &AccountDao2{}
+	default:
+		return nil
+	}	
+}
+
+type UserDaoInterface interface {
+	SelectUserLoginByID(id int64) (do.UserGetter, error)
+	SelectUserLoginByUsername(username string) (do.UserGetter, error)
+	InsertUserLogin(username, password string) error
+}
+
+type UserDao2 struct {}
+type AdminDao2 struct {}
+type StaffDao2 struct {}
+type ManageDao2 struct {}
+type FinanceDao2 struct {}
+type TicketorDao2 struct {}
+type AccountDao2 struct {}
+
+//----------------------------SelectUserLoginByID--------------------------
+func (*UserDao2) SelectUserLoginByID(id int64) (do.UserGetter, error) {
+	user := do.UserLogin{}
+    err := DB.Where("user_id = ?", id).First(&user).Error
+    if errors.Is(err, gorm.ErrRecordNotFound) {
+        return nil, nil
+    }
+    return &user, err
+}
+func (*AdminDao2) SelectUserLoginByID(id int64) (do.UserGetter, error) {
+	user := do.AdminLogin{}
+    err := DB.Where("user_id = ?", id).First(&user).Error
+    if errors.Is(err, gorm.ErrRecordNotFound) {
+        return nil, nil
+    }
+    return &user, err
+}
+func (*StaffDao2) SelectUserLoginByID(id int64) (do.UserGetter, error) {
+	user := do.StaffLogin{}
+	err := DB.Where("user_id = ?", id).First(&user).Error
+    if errors.Is(err, gorm.ErrRecordNotFound) {
+        return nil, nil
+    }
+    return &user, err
+}
+func (*ManageDao2) SelectUserLoginByID(id int64) (do.UserGetter, error) {
+	user := do.ManagerLogin{}
+	err := DB.Where("user_id =?", id).First(&user).Error
+    if errors.Is(err, gorm.ErrRecordNotFound) {
+        return nil, nil
+    }
+    return &user, err	
+}
+func (*FinanceDao2) SelectUserLoginByID(id int64) (do.UserGetter, error) {
+	user := do.FinanceLogin{}
+	err := DB.Where("user_id =?", id).First(&user).Error
+    if errors.Is(err, gorm.ErrRecordNotFound) {
+        return nil, nil
+    }
+    return &user, err	
+}
+func (*TicketorDao2) SelectUserLoginByID(id int64) (do.UserGetter, error) {
+	user := do.TicketorLogin{}
+	err := DB.Where("user_id =?", id).First(&user).Error
+    if errors.Is(err, gorm.ErrRecordNotFound) {
+        return nil, nil
+    }
+    return &user, err	
+}
+func (*AccountDao2) SelectUserLoginByID(id int64) (do.UserGetter, error) {
+	user := do.AccountLogin{}
+	err := DB.Where("user_id =?", id).First(&user).Error
+    if errors.Is(err, gorm.ErrRecordNotFound) {
+        return nil, nil
+    }
+    return &user, err
+}
+
+//---------------------------------------SelectUserLoginByUsername---------------------------------
+func (*UserDao2) SelectUserLoginByUsername(username string) (do.UserGetter, error) {
+	user := do.UserLogin{}
+	err := DB.Where("username =?", username).First(&user).Error
+    if errors.Is(err, gorm.ErrRecordNotFound) {
+        return nil, nil
+    }
+    return &user, err	
+}
+func (*AdminDao2) SelectUserLoginByUsername(username string) (do.UserGetter, error) {
+	user := do.AdminLogin{}
+	err := DB.Where("username =?", username).First(&user).Error
+    if errors.Is(err, gorm.ErrRecordNotFound) {
+        return nil, nil
+    }
+    return &user, err	
+}
+func (*StaffDao2) SelectUserLoginByUsername(username string) (do.UserGetter, error) {
+	user := do.StaffLogin{}
+	err := DB.Where("username =?", username).First(&user).Error
+    if errors.Is(err, gorm.ErrRecordNotFound) {
+        return nil, nil
+    }
+    return &user, err	
+}
+func (*ManageDao2) SelectUserLoginByUsername(username string) (do.UserGetter, error) {
+	user := do.ManagerLogin{}
+	err := DB.Where("username =?", username).First(&user).Error
+    if errors.Is(err, gorm.ErrRecordNotFound) {
+        return nil, nil
+    }
+    return &user, err	
+}
+func (*TicketorDao2) SelectUserLoginByUsername(username string) (do.UserGetter, error) {
+	user := do.TicketorLogin{}
+	err := DB.Where("username =?", username).First(&user).Error
+    if errors.Is(err, gorm.ErrRecordNotFound) {
+        return nil, nil
+    }
+    return &user, err	
+}
+func (*AccountDao2) SelectUserLoginByUsername(username string) (do.UserGetter, error) {
+	user := do.AccountLogin{}
+	err := DB.Where("username =?", username).First(&user).Error
+    if errors.Is(err, gorm.ErrRecordNotFound) {
+        return nil, nil
+    }
+    return &user, err	
+}
+func (*FinanceDao2) SelectUserLoginByUsername(username string) (do.UserGetter, error) {
+	user := do.FinanceLogin{}
+	err := DB.Where("username =?", username).First(&user).Error
+    if errors.Is(err, gorm.ErrRecordNotFound) {
+        return nil, nil
+    }
+    return &user, err	
+}
+
+//---------------------------------------InsertUserLogin--------------------------------------
+func (*UserDao2) InsertUserLogin(username, password string) error {
+	user := do.UserLogin{Username: username, Password: password}
+    err := DB.Create(&user).Error
+    if err != nil {
+        return err
+    }
+    return nil	
+}
+func (*AdminDao2) InsertUserLogin(username, password string) error {
+	user := do.AdminLogin{Username: username, Password: password}
+    err := DB.Create(&user).Error
+    if err!= nil {
+        return err
+    }
+    return nil	
+}
+func (*StaffDao2) InsertUserLogin(username, password string) error {
+	user := do.StaffLogin{Username: username, Password: password}
+	err := DB.Create(&user).Error
+    if err!= nil {
+        return err
+    }
+    return nil	
+}
+func (*ManageDao2) InsertUserLogin(username, password string) error {
+	user := do.ManagerLogin{Username: username, Password: password}
+	err := DB.Create(&user).Error
+    if err!= nil {
+        return err
+    }
+    return nil	
+}
+func (*TicketorDao2) InsertUserLogin(username, password string) error {
+	user := do.TicketorLogin{Username: username, Password: password}
+	err := DB.Create(&user).Error
+    if err!= nil {
+        return err
+    }
+    return nil		
+}
+func (*AccountDao2) InsertUserLogin(username, password string) error {
+	user := do.AccountLogin{Username: username, Password: password}
+	err := DB.Create(&user).Error
+    if err!= nil {
+        return err
+    }
+    return nil	
+}
+func (*FinanceDao2) InsertUserLogin(username, password string) error {
+	user := do.FinanceLogin{Username: username, Password: password}
+	err := DB.Create(&user).Error
+    if err!= nil {
+        return err
+    }
+    return nil		
+}
+

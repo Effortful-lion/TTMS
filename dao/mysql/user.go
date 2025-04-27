@@ -17,7 +17,7 @@ func NewUserDao(auth string) *UserDao {
 	return &UserDao{auth: auth}
 }
 
-func (ud *UserDao) SelectUserLoginByID(id int64) (do.UserTypeGetter, error) {
+func (ud *UserDao) SelectUserLoginByID(id int64) (do.UserGetter, error) {
 	auth := ud.auth
 	//var user do.UserLogin
 	switch auth {
@@ -75,7 +75,7 @@ func (ud *UserDao) SelectUserLoginByID(id int64) (do.UserTypeGetter, error) {
 	}
 }
 
-func (ud *UserDao) SelectUserLoginByUsername(username string) (do.UserTypeGetter, error) {
+func (ud *UserDao) SelectUserLoginByUsername(username string) (do.UserGetter, error) {
 	auth := ud.auth
 	switch auth {
 	case pkg.AuthAdmin:
