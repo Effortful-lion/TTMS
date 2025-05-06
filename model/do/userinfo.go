@@ -7,12 +7,15 @@ type UserInfoGetter interface {
 }
  
 type UserInfo struct {
-	UserID   int64  `gorm:"column:user_id;type:int;primaryKey;autoIncrement"`  // 用户ID，主键，自增
-	Username string `gorm:"column:username;type:varchar(100);not null;unique"` // 用户名，唯一
-	// 其他用户信息字段
+	UserInfoID int64  `gorm:"column:user_info_id;type:int;primaryKey;autoIncrement"` // 用户ID，主键，自增
+	Username   string `gorm:"column:username;type:varchar(100);not null;unique"`     // 用户名（唯一）
+
+	// 关联
+	Orders []Order
+	Tickets []Ticket
 }
 func (u *UserInfo) GetUserID() int64 {
-	return u.UserID
+	return u.UserInfoID
 }
 
 func (u *UserInfo) GetUsername() string {

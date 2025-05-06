@@ -60,7 +60,7 @@ func (h *HallService) GetAllHall() (*dto.HallInfoListResp, error) {
 		return nil, err
 	}
 	res := &dto.HallInfoListResp{
-		Halls: make([]*dto.HallInfoResp, len(datas)),
+		Halls: make([]*dto.HallInfoResp, 0),
 	}
 	for _, data := range datas {
 		res.Halls = append(res.Halls, &dto.HallInfoResp{

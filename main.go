@@ -19,7 +19,7 @@ import (
 // @contact.email server-lion@qq.com
 // @license.name Apache 2.0
 // @license.url http://www.apache.org/licenses/LICENSE-2.0.html
-// @host 39.105.136.3:8888
+// @host 45.95.212.18:43223
 func main() {
 
 	// 初始化配置文件

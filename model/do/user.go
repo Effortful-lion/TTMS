@@ -6,11 +6,10 @@ type UserGetter interface {
 }
 
 //----------------------------------------UserLogin表-------------------------------------------------
-// 用户登录注册表
 type UserLogin struct {
 	UserID   int64  `gorm:"column:user_id;type:int;primaryKey;autoIncrement"`  // 用户ID，主键，自增
-	Username string `gorm:"column:username;type:varchar(100);not null;unique"` // 用户名，唯一
-	Password string `gorm:"column:password;type:varchar(100);not null"`        // 密码
+	Username string `gorm:"column:username;type:varchar(100);not null;unique"` // 用户名（唯一）
+	Password string `gorm:"column:password;type:varchar(100);not null"`        // 密码（需加密存储）
 }
 
 func (u *UserLogin) GetPassword() string {

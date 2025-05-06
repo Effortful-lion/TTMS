@@ -29,28 +29,35 @@ func InitRouter() *gin.Engine {
 	r.POST("/login", controller.NewUserController().LoginHandler)   // 用户登录
 	r.POST("/userinfo", middleware.JWTNoAuthMiddleware(),controller.NewUserController().GetUserInfoHandler) // 用户信息
 
-	// 普通用户权限模块
-	userGroup := r.Group("/user")
-	userGroup.Use(middleware.JWTAuthMiddleware())
+	// manage 路由组
+	manageGroup := r.Group("/manage")
+	manageGroup.Use(middleware.JWTAuthMiddleware()) // 应用JWT认证中间件
+
 	{
-		// test 路由
-		userGroup.GET("/auth", func(ctx *gin.Context) {
-			auth := controller.GetCurrentUserAuthority(ctx)
-			ctx.JSON(200, gin.H{"auth": auth})
-		})
+		// 这里的路由是不需要权限的，因为它们是公共的
 
 	}
-	
-	// 管理员权限模块
-	adminGroup := r.Group("/admin")
-	adminGroup.Use(middleware.JWTAuthMiddleware(), middleware.AdminAuthMiddleware())
-	{
-		// test 路由
-		adminGroup.GET("/auth", func(ctx *gin.Context) {
-			auth := controller.GetCurrentUserAuthority(ctx)
-			ctx.JSON(200, gin.H{"auth": auth})
-		})
 
+	{
+		// 这里的路由是需要权限的，并且权限不是单一的
+		// 剧目增删改查
+		manageGroup.POST("/play", middleware.AdminAndManagerAuthMiddleware(),controller.NewPlayController().AddPlayHandler)
+		manageGroup.DELETE("/play/:play_id", middleware.AdminAndManagerAuthMiddleware(),controller.NewPlayController().DeletePlayHandler)
+		manageGroup.PUT("/play", middleware.AdminAndManagerAuthMiddleware(),controller.NewPlayController().UpdatePlayHandler)
+		manageGroup.GET("/play", middleware.AdminAndManagerAuthMiddleware(),controller.NewPlayController().GetPlayListHandler)
+		manageGroup.GET("/play/:play_id", middleware.AdminAndManagerAuthMiddleware(),controller.NewPlayController().GetPlayHandler)
+	}
+
+	userGroup := manageGroup.Group("") // 用户管理路由组
+	userGroup.Use(middleware.UserAuthMiddleware()) // 应用用户权限中间件
+	{
+		
+
+	}
+
+	adminGroup := manageGroup.Group("") // 管理员管理路由组
+	adminGroup.Use(middleware.AdminAuthMiddleware()) // 应用管理员权限中间件
+	{
 		// 演出厅增删改查
 		adminGroup.POST("/hall", controller.NewHallController().AddHallHandler)
 		adminGroup.DELETE("/hall/:hall_id", controller.NewHallController().DeleteHallHandler)
@@ -59,24 +66,11 @@ func InitRouter() *gin.Engine {
 		adminGroup.GET("/hall/:hall_id", controller.NewHallController().GetHallHandler)
 	}
 
-	// 运营经理权限模块
-	managerGroup := r.Group("/manager")
-	managerGroup.Use(middleware.JWTAuthMiddleware(), middleware.ManagerAuthMiddleware())              
+	managerGroup := manageGroup.Group("") // 运营经理管理路由组
+	managerGroup.Use(middleware.ManagerAuthMiddleware()) // 应用运营经理权限中间件
 	{
-		// test 路由
-		managerGroup.GET("/auth", func(ctx *gin.Context) {
-			auth := controller.GetCurrentUserAuthority(ctx)
-			ctx.JSON(200, gin.H{"auth": auth})
-		})
-		// 剧目增删改查
-		managerGroup.POST("/play", controller.NewPlayController().AddPlayHandler)
-		managerGroup.DELETE("/play/:play_id", controller.NewPlayController().DeletePlayHandler)
-		managerGroup.PUT("/play", controller.NewPlayController().UpdatePlayHandler)
-		managerGroup.GET("/play", controller.NewPlayController().GetPlayListHandler)
-		managerGroup.GET("/play/:play_id", controller.NewPlayController().GetPlayHandler)
+		
 	}
-
-
 
 	return r
 }

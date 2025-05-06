@@ -4,6 +4,7 @@ import (
 	"TTMS/dao/mysql"
 	"TTMS/model/dto"
 	"errors"
+	"fmt"
 )
 
 type UserService struct {
@@ -61,7 +62,9 @@ func (u *UserService) GetUserInfo(user_id int64) (data *dto.UserInfoResp, err er
 	userdao := mysql.NewUserDao(auth)
 	// 从数据库中查询用户信息
 	user, err := userdao.SelectUserInfoByID(user_id)
+	fmt.Println("user:",user)
 	if err!= nil {
+		fmt.Println("错误:", err)
 		return nil, errors.New("查询数据库失败")
 	}
 	if user == nil {

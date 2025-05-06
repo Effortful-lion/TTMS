@@ -24,7 +24,38 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/hall": {
+        "/login": {
+            "post": {
+                "description": "登录接口",
+                "consumes": [
+                    "application/json"
+                ],
+                "tags": [
+                    "全局接口"
+                ],
+                "summary": "登录接口",
+                "parameters": [
+                    {
+                        "description": "请求参数",
+                        "name": "object",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.UserLoginReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "登录响应信息",
+                        "schema": {
+                            "$ref": "#/definitions/resp.ResponseData"
+                        }
+                    }
+                }
+            }
+        },
+        "/manage/hall": {
             "get": {
                 "description": "查询所有演出厅",
                 "consumes": [
@@ -173,7 +204,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/hall/{hall_id}": {
+        "/manage/hall/{hall_id}": {
             "get": {
                 "description": "查询所有演出厅",
                 "consumes": [
@@ -214,38 +245,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/login": {
-            "post": {
-                "description": "登录接口",
-                "consumes": [
-                    "application/json"
-                ],
-                "tags": [
-                    "全局接口"
-                ],
-                "summary": "登录接口",
-                "parameters": [
-                    {
-                        "description": "请求参数",
-                        "name": "object",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/dto.UserLoginReq"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "登录响应信息",
-                        "schema": {
-                            "$ref": "#/definitions/resp.ResponseData"
-                        }
-                    }
-                }
-            }
-        },
-        "/play": {
+        "/manage/play": {
             "get": {
                 "description": "获得所有剧目",
                 "consumes": [
@@ -355,7 +355,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/play/{play_id}": {
+        "/manage/play/{play_id}": {
             "get": {
                 "description": "获得特定剧目",
                 "consumes": [
@@ -731,7 +731,7 @@ const docTemplate = `{
 // SwaggerInfo holds exported Swagger Info so clients can modify it
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
-	Host:             "39.105.136.3:8888",
+	Host:             "45.95.212.18:43223",
 	BasePath:         "",
 	Schemes:          []string{},
 	Title:            "后端系统 API在线测试文档",

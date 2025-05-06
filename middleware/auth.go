@@ -96,6 +96,17 @@ func JWTNoAuthMiddleware() func(c *gin.Context) {
 	}
 }
 
+func AdminAndManagerAuthMiddleware() func(c *gin.Context) {
+	return func(c *gin.Context) {
+		auth := c.GetString(controller.ContextUserAuthorityKey)
+		if auth!= pkg.AuthAdmin && auth!= pkg.AuthManager {
+			resp.ResponseError(c, resp.CodeNoAuth)
+			c.Abort()
+		}
+		c.Next()
+	}
+}
+
 func AdminAuthMiddleware() func(c *gin.Context) {
 	return func(c *gin.Context) {
 		auth := c.GetString(controller.ContextUserAuthorityKey)

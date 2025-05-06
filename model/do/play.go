@@ -11,15 +11,15 @@ const (
 )
 
 type Play struct {
-	PlayID          int64				`gorm:"primaryKey;autoIncrement"`
-	PlayName        string				`gorm:"type:varchar(255);not null"`
-	PlayDescription string				`gorm:"type:varchar(255);not null"`
-	PlayStartTime 	time.Time			`gorm:"type:datetime"`
-	PlayEndTime		time.Time			`gorm:"type:datetime"`
-	PlayPrice 		float64				`gorm:"type:float"`
-	PlayStatu 		PlayStatu			`gorm:"type:tinyint"`
+	PlayID          int64     `gorm:"primaryKey;autoIncrement"`
+	PlayName        string    `gorm:"type:varchar(255);not null;unique"` // 剧目名称（唯一约束）
+	PlayDescription string    `gorm:"type:varchar(255);not null"`        // 剧目描述
+	PlayStartTime   time.Time `gorm:"type:datetime"`                     // 剧目总开始时间（如巡演周期）
+	PlayEndTime     time.Time `gorm:"type:datetime"`                     // 剧目总结束时间
+	PlayPrice       float64   `gorm:"type:float(10,2)"`                  // 基础票价（保留2位小数）
+	PlayStatu       PlayStatu `gorm:"type:tinyint"`                      // 演出状态（枚举）
 
-	// 依赖关系：一个剧目对应多个演出计划，一个演出计划对应多个剧目（一对多）
-	Plans            []Plan				 `gorm:"foreignKey:PlayID"`
+	// 关联
+	Plan []Plan
 }
 

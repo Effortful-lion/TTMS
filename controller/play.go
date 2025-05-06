@@ -24,7 +24,7 @@ func NewPlayController() *PlayController {
 // @Param Authorization header string true "Bearer 用户令牌"
 // @Param object body dto.PlayInsertReq true "剧目信息"
 // @Success 200 {object} resp.ResponseData "成功"
-// @Router /play [post]
+// @Router /manage/play [post]
 func (*PlayController) AddPlayHandler(c *gin.Context) {
 	var req *dto.PlayInsertReq
 	if err := c.ShouldBindJSON(&req); err!= nil {
@@ -52,7 +52,7 @@ func (*PlayController) AddPlayHandler(c *gin.Context) {
 // @Param Authorization header string true "Bearer 用户令牌"
 // @Param play_id body int true "剧目id"
 // @Success 200 {object} resp.ResponseData "成功"
-// @Router /play/{play_id} [delete]
+// @Router /manage/play/{play_id} [delete]
 func (*PlayController) DeletePlayHandler(c *gin.Context) {
 	strid := c.Param("play_id")
 	play_id, err := strconv.ParseInt(strid, 10, 64)
@@ -76,7 +76,7 @@ func (*PlayController) DeletePlayHandler(c *gin.Context) {
 // @Param Authorization header string true "Bearer 用户令牌"
 // @Param object body dto.PlayUpdateReq true "剧目更新信息"
 // @Success 200 {object} resp.ResponseData "成功"
-// @Router /play [put]
+// @Router /manage/play [put]
 func (*PlayController) UpdatePlayHandler(c *gin.Context) {
 	var req *dto.PlayUpdateReq
 	if err := c.ShouldBindJSON(&req); err!= nil {
@@ -105,7 +105,7 @@ func (*PlayController) UpdatePlayHandler(c *gin.Context) {
 // @Produce application/json
 // @Param Authorization header string true "Bearer 用户令牌"
 // @Success 200 {object} resp.ResponseData "成功"
-// @Router /play [get]
+// @Router /manage/play [get]
 func (*PlayController) GetPlayListHandler(c *gin.Context) {
 	plays, err := service.NewPlayService().GetPlayList()
 	if err!= nil {
@@ -123,7 +123,7 @@ func (*PlayController) GetPlayListHandler(c *gin.Context) {
 // @Param Authorization header string true "Bearer 用户令牌"
 // @Param play_id body int true "剧目id"
 // @Success 200 {object} resp.ResponseData "成功"
-// @Router /play/{play_id} [get]
+// @Router /manage/play/{play_id} [get]
 func (*PlayController) GetPlayHandler(c *gin.Context) {
 	strid := c.Param("play_id")
 	play_id, err := strconv.ParseInt(strid, 10, 64)

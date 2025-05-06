@@ -24,7 +24,7 @@ func NewHallController() *HallHandler {
 // @Param Authorization header string true "Bearer 用户令牌"
 // @Param object body dto.HallIsertReq true "演出厅信息"
 // @Success 200 {object} resp.ResponseData "成功"
-// @Router /hall [post]
+// @Router /manage/hall [post]
 func (h *HallHandler) AddHallHandler(c *gin.Context) {
 	var req *dto.HallIsertReq
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -49,7 +49,7 @@ func (h *HallHandler) AddHallHandler(c *gin.Context) {
 // @Param Authorization header string true "Bearer 用户令牌"
 // @Param hall_id body int true "演出厅id"
 // @Success 200 {object} resp.ResponseData "成功"
-// @Router /hall [delete]
+// @Router /manage/hall [delete]
 func (h *HallHandler) DeleteHallHandler(c *gin.Context) {
 	hall_id := c.Param("hall_id")
 	id, err := strconv.ParseInt(hall_id, 10, 64)
@@ -73,7 +73,7 @@ func (h *HallHandler) DeleteHallHandler(c *gin.Context) {
 // @Param Authorization header string true "Bearer 用户令牌"
 // @Param object body dto.HallUpdateReq true "演出厅信息"
 // @Success 200 {object} resp.ResponseData "成功"
-// @Router /hall [put]
+// @Router /manage/hall [put]
 func (h *HallHandler) UpdateHallHandler(c *gin.Context) {
 	var req dto.HallUpdateReq
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -99,7 +99,7 @@ func (h *HallHandler) UpdateHallHandler(c *gin.Context) {
 // @Produce application/json
 // @Param Authorization header string true "Bearer 用户令牌"
 // @Success 200 {object} resp.ResponseData "成功"
-// @Router /hall [get]
+// @Router /manage/hall [get]
 func (h *HallHandler) GetHallListHandler(c *gin.Context) {
 	data, err := service.NewHallService().GetAllHall()
 	if err != nil {
@@ -117,7 +117,7 @@ func (h *HallHandler) GetHallListHandler(c *gin.Context) {
 // @Param Authorization header string true "Bearer 用户令牌"
 // @Param hall_id body int true "演出厅id"
 // @Success 200 {object} resp.ResponseData "成功"
-// @Router /hall/{hall_id} [get]
+// @Router /manage/hall/{hall_id} [get]
 func (h *HallHandler) GetHallHandler(c *gin.Context) {
 	hall_id := c.Param("hall_id")
 	id, err := strconv.ParseInt(hall_id, 10, 64)

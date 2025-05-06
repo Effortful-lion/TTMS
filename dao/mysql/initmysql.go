@@ -59,11 +59,12 @@ func MigrateTables() error {
 		&do.TicketorInfo{},
 		&do.StaffInfo{},
 		&do.ManagerInfo{},
-		&do.Play{},
+
 		&do.Hall{},
-		&do.Seat{},
-		&do.Ticket{},
+		&do.Play{},
 		&do.Order{},
 		&do.Plan{},
+		&do.Seat{},
+		&do.Ticket{},
 	)	
 }
