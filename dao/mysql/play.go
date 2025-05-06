@@ -43,7 +43,7 @@ func (*PlayDao)SelectPlayByID(play_id int64) (*do.Play, error) {
 	return &play, err
 }
 
-func (*PlayDao)UpdatePlay(play_id int,play_name, play_description string, play_start, play_end time.Time, play_price float64, play_status int) error {
+func (*PlayDao)UpdatePlay(play_id int,play_name, play_description string, play_start, play_end time.Time, play_price float64) error {
 	play := &do.Play{
 		PlayID: int64(play_id),
 		PlayName: play_name,
@@ -51,7 +51,6 @@ func (*PlayDao)UpdatePlay(play_id int,play_name, play_description string, play_s
 		PlayStartTime: play_start,
 		PlayEndTime: play_end,
 		PlayPrice: play_price,
-		PlayStatu: do.PlayStatu(play_status),	
 	}
 	return DB.Save(play).Error
 }

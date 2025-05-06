@@ -28,7 +28,6 @@ func (*PlayService) GetPlay(play_id int64) (data *dto.PlayInfoResp, err error) {
 		PlayStartTime:   play.PlayStartTime,
 		PlayEndTime:     play.PlayEndTime,
 		PlayPrice:       play.PlayPrice,
-		PlayStatu:       dto.PlayStatu(play.PlayStatu),	
 	}, nil
 }
 
@@ -50,7 +49,6 @@ func (*PlayService) GetPlayList() (data *dto.PlayListResp, err error) {
 			PlayStartTime:   play.PlayStartTime,
 			PlayEndTime:     play.PlayEndTime,
 			PlayPrice:       play.PlayPrice,
-			PlayStatu:       dto.PlayStatu(play.PlayStatu),	
 		}
 		playList.Plays = append(playList.Plays, play_info)
 	}
@@ -73,8 +71,7 @@ func (*PlayService) DeletePlay(play_id int64) (err error) {
 	return mysql.NewPlayDao().DeletePlay(play_id)
 }
 
-func (*PlayService) UpdatePlay(play_id int64, play_name, play_description string, play_start, play_end time.Time, play_price float64, paly_status dto.PlayStatu) (err error) {
-	statu := int(paly_status)
+func (*PlayService) UpdatePlay(play_id int64, play_name, play_description string, play_start, play_end time.Time, play_price float64) (err error) {
 	// 检查 play_id 是否存在于数据库中
 	play, err := mysql.NewPlayDao().SelectPlayByID(play_id)
 	if err!= nil {
@@ -83,5 +80,5 @@ func (*PlayService) UpdatePlay(play_id int64, play_name, play_description string
 	if play == nil {
 		return gorm.ErrRecordNotFound	
 	}
-	return mysql.NewPlayDao().UpdatePlay(int(play_id), play_name, play_description, play_start, play_end, play_price, statu)
+	return mysql.NewPlayDao().UpdatePlay(int(play_id), play_name, play_description, play_start, play_end, play_price)
 }

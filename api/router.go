@@ -46,6 +46,8 @@ func InitRouter() *gin.Engine {
 		manageGroup.PUT("/play", middleware.AdminAndManagerAuthMiddleware(),controller.NewPlayController().UpdatePlayHandler)
 		manageGroup.GET("/play", middleware.AdminAndManagerAuthMiddleware(),controller.NewPlayController().GetPlayListHandler)
 		manageGroup.GET("/play/:play_id", middleware.AdminAndManagerAuthMiddleware(),controller.NewPlayController().GetPlayHandler)
+		// 演出计划增删改查
+		manageGroup.POST("/plan", middleware.AdminAndManagerAuthMiddleware(),controller.NewPlanController().AddPlanHandler)
 	}
 
 	userGroup := manageGroup.Group("") // 用户管理路由组

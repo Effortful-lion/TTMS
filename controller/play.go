@@ -89,8 +89,7 @@ func (*PlayController) UpdatePlayHandler(c *gin.Context) {
 	play_start_time := req.PlayStartTime
 	play_end_time := req.PlayEndTime
 	play_price := req.PlayPrice
-	play_statu := req.PlayStatu
-	err := service.NewPlayService().UpdatePlay(play_id, play_name, play_description, play_start_time, play_end_time, play_price, play_statu)
+	err := service.NewPlayService().UpdatePlay(play_id, play_name, play_description, play_start_time, play_end_time, play_price)
 	if err!= nil {
 		resp.ResponseErrorWithMsg(c, resp.CodeError, err.Error())
 		return

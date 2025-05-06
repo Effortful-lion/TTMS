@@ -245,6 +245,47 @@ const docTemplate = `{
                 }
             }
         },
+        "/manage/plan": {
+            "post": {
+                "description": "增加演出",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "演出管理"
+                ],
+                "summary": "增加演出",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Bearer 用户令牌",
+                        "name": "Authorization",
+                        "in": "header",
+                        "required": true
+                    },
+                    {
+                        "description": "演出信息",
+                        "name": "object",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/dto.PlanInsertReq"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "成功",
+                        "schema": {
+                            "$ref": "#/definitions/resp.ResponseData"
+                        }
+                    }
+                }
+            }
+        },
         "/manage/play": {
             "get": {
                 "description": "获得所有剧目",
@@ -542,6 +583,43 @@ const docTemplate = `{
                 }
             }
         },
+        "dto.PlanInsertReq": {
+            "type": "object",
+            "required": [
+                "hall_id",
+                "plan_end_time",
+                "plan_price",
+                "plan_start_time",
+                "plan_status",
+                "play_id"
+            ],
+            "properties": {
+                "hall_id": {
+                    "description": "演出厅ID，唯一",
+                    "type": "integer"
+                },
+                "plan_end_time": {
+                    "description": "演出计划结束时间，唯一",
+                    "type": "string"
+                },
+                "plan_price": {
+                    "description": "演出计划价格，唯一",
+                    "type": "number"
+                },
+                "plan_start_time": {
+                    "description": "演出计划开始时间，唯一",
+                    "type": "string"
+                },
+                "plan_status": {
+                    "description": "演出计划状态，唯一",
+                    "type": "integer"
+                },
+                "play_id": {
+                    "description": "剧目ID，唯一",
+                    "type": "integer"
+                }
+            }
+        },
         "dto.PlayInsertReq": {
             "type": "object",
             "required": [
@@ -569,19 +647,6 @@ const docTemplate = `{
                 }
             }
         },
-        "dto.PlayStatu": {
-            "type": "integer",
-            "enum": [
-                0,
-                1,
-                2
-            ],
-            "x-enum-varnames": [
-                "PlayStatusBefore",
-                "PlayStatusDuring",
-                "PlayStatusAfter"
-            ]
-        },
         "dto.PlayUpdateReq": {
             "type": "object",
             "required": [
@@ -590,8 +655,7 @@ const docTemplate = `{
                 "play_id",
                 "play_name",
                 "play_price",
-                "play_start_time",
-                "play_statu"
+                "play_start_time"
             ],
             "properties": {
                 "play_description": {
@@ -611,9 +675,6 @@ const docTemplate = `{
                 },
                 "play_start_time": {
                     "type": "string"
-                },
-                "play_statu": {
-                    "$ref": "#/definitions/dto.PlayStatu"
                 }
             }
         },

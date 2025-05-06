@@ -31,6 +31,34 @@ definitions:
     - hall_name
     - hall_row
     type: object
+  dto.PlanInsertReq:
+    properties:
+      hall_id:
+        description: 演出厅ID，唯一
+        type: integer
+      plan_end_time:
+        description: 演出计划结束时间，唯一
+        type: string
+      plan_price:
+        description: 演出计划价格，唯一
+        type: number
+      plan_start_time:
+        description: 演出计划开始时间，唯一
+        type: string
+      plan_status:
+        description: 演出计划状态，唯一
+        type: integer
+      play_id:
+        description: 剧目ID，唯一
+        type: integer
+    required:
+    - hall_id
+    - plan_end_time
+    - plan_price
+    - plan_start_time
+    - plan_status
+    - play_id
+    type: object
   dto.PlayInsertReq:
     properties:
       play_description:
@@ -50,16 +78,6 @@ definitions:
     - play_price
     - play_start_time
     type: object
-  dto.PlayStatu:
-    enum:
-    - 0
-    - 1
-    - 2
-    type: integer
-    x-enum-varnames:
-    - PlayStatusBefore
-    - PlayStatusDuring
-    - PlayStatusAfter
   dto.PlayUpdateReq:
     properties:
       play_description:
@@ -74,8 +92,6 @@ definitions:
         type: number
       play_start_time:
         type: string
-      play_statu:
-        $ref: '#/definitions/dto.PlayStatu'
     required:
     - play_description
     - play_end_time
@@ -83,7 +99,6 @@ definitions:
     - play_name
     - play_price
     - play_start_time
-    - play_statu
     type: object
   dto.UserLoginReq:
     properties:
@@ -327,6 +342,33 @@ paths:
       summary: 查询所有演出厅
       tags:
       - 演出厅管理
+  /manage/plan:
+    post:
+      consumes:
+      - application/json
+      description: 增加演出
+      parameters:
+      - description: Bearer 用户令牌
+        in: header
+        name: Authorization
+        required: true
+        type: string
+      - description: 演出信息
+        in: body
+        name: object
+        required: true
+        schema:
+          $ref: '#/definitions/dto.PlanInsertReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: 成功
+          schema:
+            $ref: '#/definitions/resp.ResponseData'
+      summary: 增加演出
+      tags:
+      - 演出管理
   /manage/play:
     get:
       consumes:
