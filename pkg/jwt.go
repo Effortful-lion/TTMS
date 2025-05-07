@@ -8,7 +8,6 @@ package pkg
 import (
 	"TTMS/dao/redis"
 	"errors"
-	"fmt"
 	"time"
 
 	"github.com/golang-jwt/jwt/v4"
@@ -20,21 +19,21 @@ var Mysecret = []byte("jwt_secret")
 // 自定义声明 : tag 的名称和数据库没有联系
 // TODO 加一个权限字段，用于判断用户的权限（管理员/普通用户/场务员/运营经理/售票员/财务经理/会计）
 type MyClaims struct {
-	UserID int 				`json:"user_id"`
-	Username string 	`json:"username"`
-	Authority string 	`json:"authority"`
+	UserID    int    `json:"user_id"`
+	Username  string `json:"username"`
+	Authority string `json:"authority"`
 	jwt.RegisteredClaims
 }
 
 // 定义权限
 const (
-	AuthAdmin		= "admin"			// 系统管理员
-	AuthUser		= "user"			// 普通用户
-	AuthStaff		= "staff"			// 场务员
-	AuthManager		= "manager"			// 运营经理
-	AuthTicketor	= "ticketor"		// 售票员
-	AuthFinance		= "finance"			// 财务经理
-	AuthAccount     = "account"			// 会计
+	AuthAdmin    = "admin"    // 系统管理员
+	AuthUser     = "user"     // 普通用户
+	AuthStaff    = "staff"    // 场务员
+	AuthManager  = "manager"  // 运营经理
+	AuthTicketor = "ticketor" // 售票员
+	AuthFinance  = "finance"  // 财务经理
+	AuthAccount  = "account"  // 会计
 )
 
 // 使用指定的secret生成返回token
@@ -43,21 +42,21 @@ func GenToken(userID int, username, authority string) (string, error) {
 	var TokenExpireDuration = viper.GetInt("auth.expire")
 	// 创建一个我们自己的声明的数据
 	c := MyClaims{
-		UserID: userID,
-		Username: username,
+		UserID:    userID,
+		Username:  username,
 		Authority: authority,
 		RegisteredClaims: jwt.RegisteredClaims{
-			Issuer: "322Movie",
-			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Duration(TokenExpireDuration)*time.Hour)),
+			Issuer:    "322Movie",
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Duration(TokenExpireDuration) * time.Hour)),
 		},
 	}
 	// 使用指定的签名算法创建签名对象
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, c)
 	// 返回tokenStr
-	tokenStr,err := token.SignedString(Mysecret)
-	return tokenStr,err
+	tokenStr, err := token.SignedString(Mysecret)
+	return tokenStr, err
 }
- 
+
 // 解析token
 func ParseToken(tokenStr string) (*MyClaims, error) {
 	// 解析token：mc接收解析token后其中包含的信息(claims)
@@ -73,25 +72,24 @@ func ParseToken(tokenStr string) (*MyClaims, error) {
 	}
 	auth := mc.Authority
 	user_id := mc.UserID
-	fmt.Println("auth: ",auth,"user_id: ",user_id)
 	switch auth {
 	case AuthAdmin:
-		token_redis,err := redis.GetAdminToken(user_id)
+		token_redis, err := redis.GetAdminToken(user_id)
 		// token 过期
-		if err!= nil || token_redis!= tokenStr {
+		if err != nil || token_redis != tokenStr {
 			return nil, errors.New("token expired")
-		}	
+		}
 	case AuthUser:
-		token_redis,err := redis.GetUserToken(mc.UserID)
+		token_redis, err := redis.GetUserToken(mc.UserID)
 		// token 过期
-		if err!= nil || token_redis!= tokenStr {
+		if err != nil || token_redis != tokenStr {
 			return nil, errors.New("token expired")
 		}
 	}
-	if !token.Valid { 
+	if !token.Valid {
 		// 校验token失败
 		return nil, errors.New("invalid token")
 	}
 	// 校验token，token正确则返回负载的用户信息
-	return mc,nil 
+	return mc, nil
 }

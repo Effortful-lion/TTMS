@@ -267,49 +267,49 @@ func (ud *UserDao) SelectUserInfoByID(id int64) (do.UserInfoGetter, error) {
 	switch auth {
 	case pkg.AuthAdmin:
 		user := do.AdminInfo{}
-		err := DB.Where("user_id = ?", id).First(&user).Error
+		err := DB.Where("user_info_id = ?", id).First(&user).Error
 		if err != nil {
 			return nil, err
 		}
 		return &user, nil
 	case pkg.AuthUser:
 		user := do.UserInfo{}
-		err := DB.Where("user_id = ?", id).First(&user).Error
+		err := DB.Where("user_info_id = ?", id).First(&user).Error
 		if err != nil {
 			return nil, err
 		}
 		return &user, nil
 	case pkg.AuthStaff:
 		user := do.StaffInfo{}
-		err := DB.Where("user_id = ?", id).First(&user).Error
+		err := DB.Where("user_info_id = ?", id).First(&user).Error
 		if err != nil {
 			return nil, err
 		}
 		return &user, nil
 	case pkg.AuthManager:
 		user := do.ManagerInfo{}
-		err := DB.Where("user_id = ?", id).First(&user).Error
+		err := DB.Where("user_info_id = ?", id).First(&user).Error
 		if err != nil {
 			return nil, err
 		}
 		return &user, nil
 	case pkg.AuthFinance:
 		user := do.FinanceInfo{}
-		err := DB.Where("user_id = ?", id).First(&user).Error
+		err := DB.Where("user_info_id = ?", id).First(&user).Error
 		if err != nil {
 			return nil, err
 		}
 		return &user, nil
 	case pkg.AuthTicketor:
 		user := do.TicketorInfo{}
-		err := DB.Where("user_id = ?", id).First(&user).Error
+		err := DB.Where("user_info_id = ?", id).First(&user).Error
 		if err != nil {
 			return nil, err
 		}
 		return &user, nil
 	case pkg.AuthAccount:
 		user := do.AccountInfo{}
-		err := DB.Where("user_id = ?", id).First(&user).Error
+		err := DB.Where("user_info_id = ?", id).First(&user).Error
 		if err != nil {
 			return nil, err
 		}
