@@ -38,3 +38,14 @@ func (*PlanHandler)AddPlanHandler(c *gin.Context) {
 	}
 	resp.ResponseSuccess(c, nil)
 }
+
+
+func (*PlanHandler)DeletePlanHandler(c *gin.Context) {
+	plan_id := c.Param("plan_id")
+	// 调用service层
+	if err := service.NewPlanService().DeletePlan(plan_id); err!= nil {
+		resp.ResponseError(c, resp.CodeError)
+		return
+	}
+	resp.ResponseSuccess(c, nil)
+}

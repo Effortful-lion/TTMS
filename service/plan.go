@@ -34,3 +34,15 @@ func (*PlanService) AddPlan(req *dto.PlanInsertReq) error {
 	}
 	return nil 
 }
+
+func (*PlanService) DeletePlan(plan_id int) error {
+	plan, err := mysql.NewPlanDao().DeletePlan(plan_id)
+	if err != nil {
+		return err	
+	}
+	// 将 演出状态 修改（协程自动修改）
+	
+	
+
+	return error
+}
