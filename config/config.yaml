@@ -1,0 +1,25 @@
+app:
+  name: "322影院"
+  http: 8080
+  https: 8443
+
+# 数据库相关配置
+mysql:
+  host: "127.0.0.1"
+  port: 3306
+  user: "root"
+  password: "mysql123"
+  dbname: "ttms_test"
+  max_idle_conns: 50
+  max_open_conns: 200
+
+redis:
+  host: "127.0.0.1"
+  port: 6379
+  password: "123456"
+  db: 5
+
+# jwt 相关配置
+jwt:
+  expire: 86400
+
