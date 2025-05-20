@@ -2,6 +2,7 @@ package controller
 
 import (
 	"TTMS/model/dto"
+	"TTMS/pkg"
 	"TTMS/pkg/resp"
 	"TTMS/service"
 
@@ -39,9 +40,23 @@ func (*PlanHandler)AddPlanHandler(c *gin.Context) {
 	resp.ResponseSuccess(c, nil)
 }
 
-
+// @Summary 删除演出
+// @Description 删除演出
+// @Tags 演出管理
+// @Accept application/json
+// @Produce application/json
+// @Param Authorization header string true "Bearer 用户令牌"
+// @Param plan_id body int true "演出id"
+// @Success 200 {object} resp.ResponseData "成功"
+// @Router /manage/plan [delete]
 func (*PlanHandler)DeletePlanHandler(c *gin.Context) {
-	plan_id := c.Param("plan_id")
+	planStr := c.Param("plan_id")
+	plan_id, err := pkg.ParseStringToInt64(planStr)
+	if err!= nil {
+		resp.ResponseError(c, resp.CodeInvalidParams)
+		return
+	}
+
 	// 调用service层
 	if err := service.NewPlanService().DeletePlan(plan_id); err!= nil {
 		resp.ResponseError(c, resp.CodeError)
@@ -49,3 +64,15 @@ func (*PlanHandler)DeletePlanHandler(c *gin.Context) {
 	}
 	resp.ResponseSuccess(c, nil)
 }
+
+
+// func (*PlanHandler)GetPlanListHandler(c *gin.Context) {
+// 	// 调用service层
+// 	planList, err := service.NewPlanService().GetPlanList()
+// 	if err!= nil {
+// 		resp.ResponseError(c, resp.CodeError)
+// 		return
+// 	}
+// 	resp.ResponseSuccess(c, planList)
+// }
+

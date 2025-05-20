@@ -41,3 +41,12 @@ func (*PlanRedis) CheckPlanStatus(plan_id int64) (bool, error) {
 }
 
 // TODO 定时任务更新数据库演出状态
+
+// 删除演出计划
+func (*PlanRedis) DeletePlan(plan_id int64) error {
+	err := Rdb.Del(context.Background(), fmt.Sprintf("plan:%d", plan_id)).Err()
+	if err!= nil {
+		return err
+	}
+	return nil
+}

@@ -10,6 +10,6 @@ type Hall struct {
 	HallTotal int    `gorm:"column:hall_total;type:int;not null"`                // 座位总数（应等于 HallRow*HallCol）
 
 	// 关联
-	Seats []Seat
-	Plans []Plan
+	Seats []Seat 
+	Plans []Plan 
 }

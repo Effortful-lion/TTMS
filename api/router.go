@@ -49,6 +49,7 @@ func InitRouter() *gin.Engine {
 		// 演出计划增删改查
 		manageGroup.POST("/plan", middleware.AdminAndManagerAuthMiddleware(),controller.NewPlanController().AddPlanHandler)
 		manageGroup.DELETE("/plan/:plan_id", middleware.AdminAndManagerAuthMiddleware(),controller.NewPlanController().DeletePlanHandler)
+		//manageGroup.GET("/plan", middleware.AdminAndManagerAuthMiddleware(),controller.NewPlanController().GetPlanListHandler)
 	}
 
 	userGroup := manageGroup.Group("") // 用户管理路由组

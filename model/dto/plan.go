@@ -9,3 +9,4 @@ type PlanInsertReq struct {
 	PlanPrice float64 `json:"plan_price" binding:"required"` // 演出计划价格，唯一
 	PlanStatus int `json:"plan_status"` // 演出计划状态，唯一
 }
+

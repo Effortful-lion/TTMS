@@ -35,14 +35,20 @@ func (*PlanService) AddPlan(req *dto.PlanInsertReq) error {
 	return nil 
 }
 
-func (*PlanService) DeletePlan(plan_id int) error {
-	plan, err := mysql.NewPlanDao().DeletePlan(plan_id)
+func (*PlanService) DeletePlan(plan_id int64) error {
+	err := mysql.NewPlanDao().DeletePlan(plan_id)
 	if err != nil {
 		return err	
 	}
-	// 将 演出状态 修改（协程自动修改）
-	
-	
+	// redis 删除 演出计划
+	if err := redis.NewPlanRedis().DeletePlan(plan_id);err!= nil {
+		return err
+	}
 
-	return error
+	return err
 }
+
+// func (*PlanService) GetPlanList() ([]*dto.PlanListResp, error) {	
+	
+// 	return nil,nil
+// }

@@ -1,6 +1,9 @@
 package pkg
 
-import "time"
+import (
+	"strconv"
+	"time"
+)
 
 func ParseStringTime(timeStr string) (time.Time) {
 	if timeStr == "" {
@@ -22,4 +25,12 @@ func ParseStringTimeToTimeStamp(timeStr string) (int64) {
 		return time.Now().Unix()
 	}
 	return parsedTime.Unix()
+}
+
+func ParseStringToInt64(str string) (int64, error) {
+	if str == "" {
+		return 0, nil
+	}
+	str_to_id, err := strconv.Atoi(str)
+	return int64(str_to_id), err
 }

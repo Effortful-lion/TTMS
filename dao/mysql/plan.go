@@ -29,3 +29,11 @@ func (*PlanDao) InsertPlan(play_id, hall_id int64, plan_start_time, plan_end_tim
 	}
 	return nil
 }
+
+func (*PlanDao) DeletePlan(plan_id int64) error {
+	if err := DB.Delete(&do.Plan{}, plan_id).Error; err!= nil {
+		return err
+	}else{
+		return nil
+	}	
+}

@@ -23,11 +23,11 @@ func (u *UserInfo) GetUsername() string {
 }
 //----------------------------------------AdminInfo表-------------------------------------------------
 type AdminInfo struct {
-	UserID   int64  `gorm:"column:user_id;type:int;primaryKey;autoIncrement"`  // 用户ID，主键，自增
+	UserInfoID int64  `gorm:"column:user_info_id;type:int;primaryKey;autoIncrement"` // 用户ID，主键，自增
 	Username string `gorm:"column:username;type:varchar(100);not null;unique"` // 用户名，唯一	
 }
 func (u *AdminInfo) GetUserID() int64 {
-	return u.UserID
+	return u.UserInfoID
 }
 
 func (u *AdminInfo) GetUsername() string {
@@ -35,11 +35,11 @@ func (u *AdminInfo) GetUsername() string {
 }
 //----------------------------------------StaffInfo表----------------------------------------------
 type StaffInfo struct {
-	UserID   int64  `gorm:"column:user_id;type:int;primaryKey;autoIncrement"`  // 用户ID，主键，自增
+	UserInfoID int64  `gorm:"column:user_info_id;type:int;primaryKey;autoIncrement"` // 用户ID，主键，自增
 	Username string `gorm:"column:username;type:varchar(100);not null;unique"` // 用户名，唯一	
 }
 func (u *StaffInfo) GetUserID() int64 {
-	return u.UserID
+	return u.UserInfoID
 }
 
 func (u *StaffInfo) GetUsername() string {
@@ -47,11 +47,11 @@ func (u *StaffInfo) GetUsername() string {
 }
 //----------------------------------------ManagerInfo表----------------------------------------------
 type ManagerInfo struct {
-	UserID   int64  `gorm:"column:user_id;type:int;primaryKey;autoIncrement" json:"user_id,omitempty"`   // 用户ID，主键，自增
+	UserInfoID int64  `gorm:"column:user_info_id;type:int;primaryKey;autoIncrement"` // 用户ID，主键，自增
 	Username string `gorm:"column:username;type:varchar(100);not null;unique" json:"username,omitempty"` // 用户名，唯一
 }
 func (u *ManagerInfo) GetUserID() int64 {
-	return u.UserID
+	return u.UserInfoID
 }
 
 func (u *ManagerInfo) GetUsername() string {
@@ -59,11 +59,11 @@ func (u *ManagerInfo) GetUsername() string {
 }
 //----------------------------------------TicketorInfo表----------------------------------------------
 type TicketorInfo struct {
-	UserID   int64  `gorm:"column:user_id;type:int;primaryKey;autoIncrement"`  // 用户ID，主键，自增
+	UserInfoID int64  `gorm:"column:user_info_id;type:int;primaryKey;autoIncrement"` // 用户ID，主键，自增
 	Username string `gorm:"column:username;type:varchar(100);not null;unique"` // 用户名，唯一	
 }
 func (u *TicketorInfo) GetUserID() int64 {
-	return u.UserID
+	return u.UserInfoID
 }
 
 func (u *TicketorInfo) GetUsername() string {
@@ -71,11 +71,11 @@ func (u *TicketorInfo) GetUsername() string {
 }
 //----------------------------------------FinanceInfo表----------------------------------------------
 type FinanceInfo struct {
-	UserID   int64  `gorm:"column:user_id;type:int;primaryKey;autoIncrement"`  // 用户ID，主键，自增
+	UserInfoID int64  `gorm:"column:user_info_id;type:int;primaryKey;autoIncrement"` // 用户ID，主键，自增
 	Username string `gorm:"column:username;type:varchar(100);not null;unique"` // 用户名，唯一
 }
 func (u *FinanceInfo) GetUserID() int64 {
-	return u.UserID
+	return u.UserInfoID
 }
 
 func (u *FinanceInfo) GetUsername() string {
@@ -83,11 +83,11 @@ func (u *FinanceInfo) GetUsername() string {
 }
 //----------------------------------------AccountInfo表----------------------------------------------
 type AccountInfo struct {
-	UserID   int64  `gorm:"column:user_id;type:int;primaryKey;autoIncrement"`  // 用户ID，主键，自增
+	UserInfoID int64  `gorm:"column:user_info_id;type:int;primaryKey;autoIncrement"` // 用户ID，主键，自增
 	Username string `gorm:"column:username;type:varchar(100);not null;unique"` // 用户名，唯一
 }
 func (u *AccountInfo) GetUserID() int64 {
-	return u.UserID
+	return u.UserInfoID
 }
 
 func (u *AccountInfo) GetUsername() string {
