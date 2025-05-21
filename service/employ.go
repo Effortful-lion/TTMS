@@ -29,6 +29,9 @@ func (u *EmployService) GetUserInfo(id int64) (data *dto.UserInfoResp, err error
 	// 根据员工id查询用户角色
 	userroledao := mysql.NewUserRoleDao()
 	roleName, err := userroledao.SelectRoleByUserID(id)
+	if err!= nil {
+		return nil, errors.New("查询数据库失败")
+	}
 	res.Auth = roleName
 	return &res, nil
 }
