@@ -2,6 +2,8 @@ package service
 
 import (
 	"TTMS/dao/mysql"
+	"TTMS/model/dto"
+	"TTMS/pkg/common"
 	"errors"
 )
 
@@ -10,6 +12,22 @@ type CustomerService struct {
 
 func NewCustomerService() *CustomerService {
 	return &CustomerService{}
+}
+
+func (u *CustomerService) GetUserInfo(id int64) (data *dto.UserInfoResp, err error) {
+	userdao := mysql.NewCustomerDao()
+	user, err := userdao.SelectCustomerByID(id)
+	if err != nil {
+		return nil, errors.New("查询数据库失败")	
+	}
+	if user == nil {
+		return nil, errors.New("用户不存在")
+	}
+	var res dto.UserInfoResp
+	res.UserID = user.CustomerID
+	res.Username = user.CustomerName
+	res.Auth = common.AuthUser
+	return &res, nil
 }
 
 func (u *CustomerService) SignUp(username, password string) (err error) {

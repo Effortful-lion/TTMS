@@ -9,6 +9,19 @@ func NewEmployDao() *EmployDao {
 	return &EmployDao{}
 }
 
+
+func (ud *EmployDao) SelectEmployByID(id int64) (*do.Employ, error) {
+	var employ do.Employ
+	result := DB.Table("employ").Where("employ_id =?", id).First(&employ)	
+	if result.Error!= nil {
+		if result.Error.Error() == "record not found" {
+			return nil, nil
+		}
+		return nil, result.Error	
+	}
+	return &employ, nil
+}
+
 func (ud *EmployDao) SelectEmployByUsername(username string) (*do.Employ, error) {
 	var employ do.Employ
 	result := DB.Table("employ").Where("employ_name = ?", username).First(&employ)

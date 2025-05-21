@@ -7,6 +7,7 @@ package pkg
 
 import (
 	"TTMS/config"
+	"TTMS/dao/redis"
 	"errors"
 	"time"
 
@@ -23,28 +24,6 @@ type MyClaims struct {
 	Authority string `json:"authority"`
 	jwt.RegisteredClaims
 }
-
-// 定义角色
-const (
-	AuthAdmin    = "admin"    // 系统管理员
-	AuthUser     = "user"     // 普通用户
-	AuthStaff    = "staff"    // 场务员
-	AuthManager  = "manager"  // 运营经理
-	AuthTicketor = "ticketor" // 售票员
-	AuthFinance  = "finance"  // 财务经理
-	AuthAccount  = "account"  // 会计
-)
-
-// 定义角色id
-const (
-	AuthAdminID    = 1    // 系统管理员
-	AuthUserID     = 7    // 普通用户
-	AuthStaffID    = 2    // 场务员
-	AuthManagerID  = 3    // 运营经理
-	AuthTicketorID = 4    // 售票员
-	AuthFinanceID  = 5    // 财务经理
-	AuthAccountID  = 6    // 会计
-)
 
 // 使用指定的secret生成返回token
 func GenToken(userID int, username, authority string) (string, error) {
@@ -80,6 +59,17 @@ func ParseToken(tokenStr string) (*MyClaims, error) {
 		// token解析失败
 		return nil, err
 	}
+
+	auth := mc.Authority
+	user_id := mc.UserID
+
+	// 判断token是否过期
+	token_redis, err := redis.GetToken(int64(user_id), auth)
+	if err != nil || token_redis != tokenStr {
+		// token 过期
+		return nil, errors.New("token expired")
+	}
+
 	if !token.Valid {
 		// 校验token失败
 		return nil, errors.New("invalid token")

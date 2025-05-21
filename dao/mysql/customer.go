@@ -12,6 +12,17 @@ type CustomerDao struct {
 func NewCustomerDao() *CustomerDao {
 	return &CustomerDao{}
 }
+func (ud *CustomerDao)SelectCustomerByID(id int64) (*do.Customer, error) {
+	var customer do.Customer
+	result := DB.Table("customer").Where("customer_id =?", id).First(&customer)
+	if result.Error!= nil {
+		if result.Error.Error() == "record not found" {
+			return nil, nil
+		}
+		return nil, result.Error
+	}
+	return &customer, nil
+}
 
 func (ud *CustomerDao)SelectCustomerByUsername(username string) (*do.Customer, error) {
 	var customer do.Customer

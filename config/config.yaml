@@ -17,7 +17,7 @@ redis:
   host: "127.0.0.1"
   port: 6379
   password: "123456"
-  db: 5
+  db: 0
 
 # jwt 相关配置
 jwt:

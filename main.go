@@ -16,17 +16,23 @@ func main() {
 	}
 
 	// 初始化数据库
-	if err := mysql.InitMysql(); err!= nil {
-		fmt.Println(err)	
+	if err := mysql.InitMysql(); err != nil {
+		fmt.Println(err)
 	}
 
 	// 初始化redis
-	if err := redis.InitRedis(); err!= nil {
+	if err := redis.InitRedis(); err != nil {
+		fmt.Println(err)
+	}
+
+	// 初始化redis存储的资源访问权限表
+	if err := redis.InitRedisResource(); err!= nil {
 		fmt.Println(err)
 	}
 
 	r := api.InitRouter()
 
-	r.Run()
+	httpPort := config.Conf.AppConfig.HttpPort
+	r.Run(fmt.Sprintf(":%d", httpPort))
 
 }

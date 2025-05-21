@@ -2,7 +2,8 @@ package service
 
 import (
 	"TTMS/dao/mysql"
-	"TTMS/pkg"
+	"TTMS/model/dto"
+	"TTMS/pkg/common"
 	"errors"
 )
 
@@ -13,6 +14,24 @@ func NewEmployService() *EmployService {
 	return &EmployService{}
 }
 
+func (u *EmployService) GetUserInfo(id int64) (data *dto.UserInfoResp, err error) {
+	userdao := mysql.NewEmployDao()
+	user, err := userdao.SelectEmployByID(id)
+	if err!= nil {
+		return nil, errors.New("查询数据库失败")
+	}
+	if user == nil {
+		return nil, errors.New("用户不存在")	
+	}
+	var res dto.UserInfoResp
+	res.UserID = user.EmployID
+	res.Username = user.EmployName
+	// 根据员工id查询用户角色
+	userroledao := mysql.NewUserRoleDao()
+	roleName, err := userroledao.SelectRoleByUserID(id)
+	res.Auth = roleName
+	return &res, nil
+}
 
 func (u *EmployService) Login(username, password, auth string) (id int64, err error) {
 	userdao := mysql.NewEmployDao()
@@ -66,18 +85,18 @@ func (u *EmployService) SignUp(username, password, auth string) (err error) {
 	userroledao := mysql.NewUserRoleDao()
 	role_id := 0
 	switch auth {
-	case pkg.AuthAdmin:
-		role_id = pkg.AuthAdminID
-	case pkg.AuthManager:
-		role_id = pkg.AuthManagerID
-	case pkg.AuthStaff:
-		role_id = pkg.AuthStaffID
-	case pkg.AuthFinance:
-		role_id = pkg.AuthFinanceID
-	case pkg.AuthTicketor:
-		role_id = pkg.AuthTicketorID
-	case pkg.AuthAccount:
-		role_id = pkg.AuthAccountID
+	case common.AuthAdmin:
+		role_id = common.AuthAdminID
+	case common.AuthManager:
+		role_id = common.AuthManagerID
+	case common.AuthStaff:
+		role_id = common.AuthStaffID
+	case common.AuthFinance:
+		role_id = common.AuthFinanceID
+	case common.AuthTicketor:
+		role_id = common.AuthTicketorID
+	case common.AuthAccount:
+		role_id = common.AuthAccountID
 	default:
 		return errors.New("权限错误")
 	}

@@ -1,6 +1,6 @@
 package do
 
-
+// redis 中存储了角色和资源做查询，这里做一个冗余，方便存储和恢复
 
 type RoleResource struct {
 	RoleResourceID   int64    		`gorm:"column:role_resource_id;type:int;primaryKey;autoIncrement"` // 角色资源ID，主键，自增

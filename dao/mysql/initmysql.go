@@ -51,5 +51,8 @@ func MigrateTables() error {
 		do.Role{},
 		do.RoleResource{},
 		do.UserRole{},
+		do.Play{},
+		do.Hall{},
+		do.Plan{},
 	)	
 }
