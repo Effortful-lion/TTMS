@@ -28,4 +28,5 @@ const (
 const (
 	ResourceManage = "manage" // 管理
 	ResourceUserinfo = "userinfo" // 用户信息
+	ResourceSale = "sale"		// 售票或买票
 )

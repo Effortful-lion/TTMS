@@ -31,6 +31,13 @@ func InitRouter() *gin.Engine {
 	// 按照资源权限分配路由组
 	// 然后按照模块分配路由组
 
+	SaleGroup := r.Group("/sale")
+	SaleGroup.Use(middleware.JWTAuthMiddleware())
+	{
+		// 暂时规定：管理员、售票员可以售票 或者 用户可以买票
+		SaleGroup.POST("/ticket", controller.NewTicketController().BuyHandler)
+	}
+
 	ManageGroup := r.Group("/manage")
 	ManageGroup.Use(middleware.JWTAuthMiddleware())
 	{
