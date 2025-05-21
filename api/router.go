@@ -13,6 +13,9 @@ func InitRouter() *gin.Engine {
 	// 初始化路由组
 	r := gin.Default()
 
+	// 设置跨域
+	r.Use(middleware.Cors())
+
 	// 注册路由
 	r.GET("/ping", func(c *gin.Context) {
 		c.JSON(200, gin.H{
@@ -45,6 +48,10 @@ func InitRouter() *gin.Engine {
 		PlanGroup := ManageGroup.Group("/plan")
 		{
 			PlanGroup.POST("", controller.NewPlanController().AddPlanHandler)	
+			PlanGroup.DELETE("/:plan_id", controller.NewPlanController().DeletePlanHandler)
+			PlanGroup.PUT("", controller.NewPlanController().UpdatePlanHandler)
+			PlanGroup.GET("", controller.NewPlanController().GetPlanListHandler)
+			PlanGroup.GET("/:plan_id", controller.NewPlanController().GetPlanHandler)
 		}
 
 		// 演出厅增删改查

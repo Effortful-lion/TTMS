@@ -3,6 +3,7 @@ package common
 import (
 	"strconv"
 	"time"
+
 )
 
 func ParseStringTime(timeStr string) (time.Time) {
@@ -14,6 +15,11 @@ func ParseStringTime(timeStr string) (time.Time) {
 		return time.Now()
 	}
 	return parsedTime
+}
+
+// 将时间转换为字符串
+func ParseTimeToString(t time.Time) string {
+    return t.Format("2006-01-02 15:04:05")
 }
 
 func ParseStringTimeToTimeStamp(timeStr string) (int64) {

@@ -21,7 +21,16 @@ func (ud *PlayDao) InsertPlay(play_name, play_description string, play_duration 
 
 func (ud *PlayDao)DeletePlay(play_id int64) error {
 	var play *do.Play
-	return DB.Where("play_id =?", play_id).Delete(&play).Error
+	err := DB.Where("play_id =?", play_id).Delete(&play).Error
+	if err!= nil {
+		return err
+	}
+	// 剧目删除，对应的plan也删除
+	err = NewPlanDao().DeletePlanByPlayID(play_id)
+	if err!= nil {
+		return err
+	}
+	return nil
 }
 
 func (*PlayDao)UpdatePlay(play_id int,play_name, play_description string, play_duration int, play_price float64) error {
@@ -35,10 +44,16 @@ func (*PlayDao)UpdatePlay(play_id int,play_name, play_description string, play_d
 	return DB.Save(play).Error
 }
 
-func (*PlayDao)SelectPlayByID(play_id int64) (*do.Play, error) {
+func (*PlayDao) SelectPlayByID(play_id int64) (*do.Play, error) {
 	var play do.Play
 	err := DB.Where("play_id = ?", play_id).First(&play).Error	
-	return &play, err
+	if err!= nil {
+		if err.Error() == "record not found" {
+			return nil, nil
+		}
+		return nil, err	
+	}
+	return &play, nil
 }
 
 func (*PlayDao)SelectAllPlay() ([]*do.Play, error) {
