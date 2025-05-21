@@ -12,6 +12,25 @@ func NewPlanDao() *PlanDao {
 	return &PlanDao{}
 }
 
+func (*PlanDao) DeletePlanByIDs(ids []int64) error {
+	for _, id := range ids {
+		err := DB.Delete(&do.Plan{}, id).Error
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func (*PlanDao) SelectPlanByHallID(hall_id int64) ([]int64, error) {
+	ids := []int64{}
+	// 查询 Plan 结构体并提取 id 字段
+	if err := DB.Model(&do.Plan{}).Where("hall_id = ?", hall_id).Pluck("plan_id", &ids).Error; err != nil {
+		return nil, err
+	}
+	return ids, nil
+}
+
 func (*PlanDao) SelectPlanByID(plan_id int64) (*do.Plan, error) {
 	plan := do.Plan{}
 	err := DB.Where("plan_id = ?", plan_id).First(&plan).Error

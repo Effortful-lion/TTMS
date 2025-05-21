@@ -25,7 +25,17 @@ func (h *HallService) DeleteHall(hall_id int64) error {
 	if hall == nil {
 		return errors.New("要删除的演出厅不存在")
 	} 
-	return mysql.NewHallDao().DeleteHall(hall_id)
+	err = mysql.NewHallDao().DeleteHall(hall_id)
+	if err != nil {
+		return err
+	}
+	// 删除演出厅后，对应的演出计划也要删除
+	// 根据演出厅id查出对应的演出计划id列表
+	ids, err := mysql.NewPlanDao().SelectPlanByHallID(hall_id)
+	if err != nil {
+		return err
+	}
+	return mysql.NewPlanDao().DeletePlanByIDs(ids)
 }
 
 func (h *HallService) UpdateHall(hall_id int64, hall_name string, hall_row, hall_col int) error {
