@@ -1,0 +1,81 @@
+package redis
+
+import (
+	"context"
+	"errors"
+	"time"
+
+	"TTMS/model/do"
+	"TTMS/pkg/common"
+	"fmt"
+)
+
+// do/plan.go
+// const (
+// 	PlanStatusBefore PlanStatu = iota		//  未开始
+// 	PlanStatusDuring						//  进行中
+// 	PlanStatusAfter							//  已结束
+// )
+
+// 实现要求：
+// 1. 初始化演出状态为未开始并设置过期时间（演出开始时间 - 当前时间）
+// 2. 一直监听redis中关于 plan_status: 为前缀的键的改变
+// 3. 监听中，通过既定的时间触发更新动作（演出的开始时间、演出的结束时间）
+// 4. 更新并修改过期时间（演出结束时间 - 当前时间）
+
+// 实现准备：
+// 1. plan_status: 为前缀的键的格式为：plan_status:{plan_id}
+// 2. 监听函数
+// 3. 更新函数
+// 4. 同步函数（同步数据库，将plan_status同步到plan表中的plan_status字段）
+// 5. 最后通过状态为 2 的键 1 分钟过期时间后自动删除
+type RedisPlanManager  struct { 
+}
+
+func NewRedisPlanManager() *RedisPlanManager { 
+	return &RedisPlanManager{}
+}
+
+const (
+    PlanStatusKeyPrefix = "plan_status:"
+)
+
+var NotifyStart chan string
+var NotifyEnd chan string
+
+// 初始化 plan_status 键
+func (r *RedisPlanManager) SetPlanStatusBefore(planId int, startTime string) error {
+    // key
+    key := fmt.Sprintf("%s%d", PlanStatusKeyPrefix, planId)
+    // time
+    timeInt := common.ParseStringTimeToTimeStamp(startTime)
+    now := time.Now().Unix()
+    // expire = 开始时间 - 当前时间
+    expire := timeInt - now
+    if expire < 0 {
+        return errors.New("时间已过,演出开始时间输入有误")
+    }else{
+        return Rdb.Set(context.Background(), key, do.PlanStatusBefore, time.Duration(expire) * time.Second).Err()
+    }
+}
+
+// 监听状态: 使用 chan 进行异步通信
+func (r *RedisPlanManager) WatchPlanStatus() {
+    // 监听键的前缀
+    key := PlanStatusKeyPrefix
+    // 开始监听，一旦有过期键，先查看原本的值，如果为 0 ，则放到 NotifyStart ；如果为 1 ，则放到 NotifyEnd
+   
+}
+
+// 更新函数
+func (r *RedisPlanManager) UpdatePlanStatus() error {
+    // 从 Notify 通道获得过期键，根据键的不同分别进行状态更新
+    // 从 NotifyStart 获取开始键，从更新为 1，并设置过期时间为 （plan_end_time - now）
+    // 从 NotifyEnd 获取开始键，更新为 2，并设置过期时间 1 分钟 (供 redis 进行数据库同步)
+}
+
+// 同步函数
+func (r *RedisPlanManager) SyncPlanStatus() error { 
+    // 遍历所有 plan_status: 为前缀的键，并同步到 mysql 数据库
+
+}

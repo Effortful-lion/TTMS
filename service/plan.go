@@ -2,6 +2,7 @@ package service
 
 import (
 	"TTMS/dao/mysql"
+	"TTMS/dao/redis"
 	"TTMS/model/dto"
 	"TTMS/pkg/common"
 	"errors"
@@ -33,7 +34,7 @@ func (*PlanService) GetPlan(plan_id int64) (*dto.PlanInfoResp, error) {
 		PlanStartTime: plan_start_str,
 		PlanEndTime: plan_end_str,
 		PlanPrice: plan.PlanPrice,
-		PlanStatus: int(plan.PlanStatu),
+		PlanStatus: int(plan.PlanStatus),
 	}
 
 	return plan_res, nil
@@ -59,7 +60,7 @@ func (*PlanService) GetPlanList() (*dto.PlanInfoListResp, error) {
 			PlanStartTime: common.ParseTimeToString(plan.PlanStartTime),
 			PlanEndTime: common.ParseTimeToString(plan.PlanEndTime),
 			PlanPrice: plan.PlanPrice,
-			PlanStatus: int(plan.PlanStatu),
+			PlanStatus: int(plan.PlanStatus),
 		}
 		res.PlanInfoList = append(res.PlanInfoList, planinfo)
 	}
@@ -114,16 +115,16 @@ func (*PlanService) AddPlan(req *dto.PlanInsertReq) error {
 		return errors.New("演出厅不存在")
 	}
 
-	if err := mysql.NewPlanDao().InsertPlan(play_id, hall_id, plan_start_time, plan_end_time, plan_price);err != nil {
+	plan_id, err := mysql.NewPlanDao().InsertPlan(play_id, hall_id, plan_start_time, plan_end_time, plan_price);
+	if err != nil {
 		return err	
 	}
-	// TODO 将 演出状态 存入 redis 中
-	// st := common.ParseStringTimeToTimeStamp(plan_start_time)
-	// et := common.ParseStringTimeToTimeStamp(plan_end_time)
-	// expire := et - st
-	// if err := redis.NewPlanRedis().SetPlanStatus(play_id, plan_status,expire);err!= nil {
-	// 	return err
-	// }
+	// 将 演出状态 存入 redis 中
+	err = redis.RedisPlanCli.SetPlanStatusBefore(plan_id, plan_start_time, plan_end_time)
+	if err != nil {
+		return err
+	}
+	
 	return nil 
 }
 
@@ -133,8 +134,6 @@ func (*PlanService) DeletePlan(plan_id int64) error {
 		return err	
 	}
 	// TODO redis 删除 演出计划
-	// if err := redis.NewPlanRedis().DeletePlan(plan_id);err!= nil {
-	// 	return err
-	// }
+	err = redis.RedisPlanCli.DeletePlanStatus(plan_id)
 	return err
 }

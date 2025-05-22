@@ -72,7 +72,11 @@ func (*PlanDao) UpdatePlan(plan_id, play_id, hall_id int64, plan_start_time, pla
 	return DB.Save(plan).Error
 }
 
-func (*PlanDao) InsertPlan(play_id, hall_id int64, plan_start_time, plan_end_time string, plan_price float64) error {
+func (*PlanDao) UpdatePlanStatus(plan_id int64, plan_status int8) error{
+	return DB.Model(&do.Plan{}).Where("plan_id = ?", plan_id).Update("plan_status", plan_status).Error
+}
+
+func (*PlanDao) InsertPlan(play_id, hall_id int64, plan_start_time, plan_end_time string, plan_price float64) (int64, error) {
 	// 先将时间转为time.Time类型，然后再插入数据库
 	planStartTime := common.ParseStringTime(plan_start_time)
 	planEndTime := common.ParseStringTime(plan_end_time)
@@ -84,9 +88,9 @@ func (*PlanDao) InsertPlan(play_id, hall_id int64, plan_start_time, plan_end_tim
 		PlanPrice:     plan_price,
 	}
 	if err := DB.Create(&plan).Error; err != nil {
-		return err
+		return 0, err
 	}
-	return nil
+	return plan.PlanID, nil
 }
 
 func (*PlanDao) DeletePlan(plan_id int64) error {

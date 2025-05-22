@@ -9,12 +9,11 @@ func NewPlayDao() *PlayDao {
 	return &PlayDao{}
 }
 
-func (ud *PlayDao) InsertPlay(play_name, play_description string, play_duration int, play_price float64) error {
+func (ud *PlayDao) InsertPlay(play_name, play_description string, play_duration int) error {
 	play := &do.Play{
 		PlayName:        play_name,
 		PlayDescription: play_description,
 		PlayDuration:    play_duration,
-		PlayPrice:       play_price,
 	}
 	return DB.Create(play).Error
 }
@@ -33,13 +32,12 @@ func (ud *PlayDao)DeletePlay(play_id int64) error {
 	return nil
 }
 
-func (*PlayDao)UpdatePlay(play_id int,play_name, play_description string, play_duration int, play_price float64) error {
+func (*PlayDao)UpdatePlay(play_id int,play_name, play_description string, play_duration int) error {
 	play := &do.Play{
 		PlayID: int64(play_id),
 		PlayName: play_name,
 		PlayDescription: play_description,
 		PlayDuration: play_duration,
-		PlayPrice: play_price,
 	}
 	return DB.Save(play).Error
 }

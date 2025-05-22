@@ -30,6 +30,9 @@ func main() {
 		fmt.Println(err)
 	}
 
+	// 启动状态监听
+	go redis.RedisPlanCli.Start()
+
 	r := api.InitRouter()
 
 	httpPort := config.Conf.AppConfig.HttpPort

@@ -13,8 +13,8 @@ func NewPlayService() *PlayService {
 	return &PlayService{}
 }
 
-func (u *PlayService) AddPlay(play_name, play_description string, play_duration int, play_price float64) (err error) {
-	return mysql.NewPlayDao().InsertPlay(play_name, play_description, play_duration, play_price)
+func (u *PlayService) AddPlay(play_name, play_description string, play_duration int) (err error) {
+	return mysql.NewPlayDao().InsertPlay(play_name, play_description, play_duration)
 }
 
 func (*PlayService) GetPlay(play_id int64) (data *dto.PlayInfoResp, err error) {
@@ -31,7 +31,6 @@ func (*PlayService) GetPlay(play_id int64) (data *dto.PlayInfoResp, err error) {
 	res.PlayName = play.PlayName
 	res.PlayDescription = play.PlayDescription
 	res.PlayDuration = play.PlayDuration
-	res.PlayPrice = play.PlayPrice 
 	return &res, nil
 }
 
@@ -51,7 +50,6 @@ func (*PlayService) GetPlayList() (data *dto.PlayListResp, err error) {
 			PlayName:        play.PlayName,
 			PlayDescription: play.PlayDescription,
 			PlayDuration:    play.PlayDuration,
-			PlayPrice:       play.PlayPrice,
 		}
 		playList.Plays = append(playList.Plays, play_info)
 	}
@@ -70,7 +68,7 @@ func (*PlayService) DeletePlay(play_id int64) (err error) {
 	return mysql.NewPlayDao().DeletePlay(play_id)
 }
 
-func (*PlayService) UpdatePlay(play_id int64, play_name, play_description string, play_duration int, play_price float64) (err error) {
+func (*PlayService) UpdatePlay(play_id int64, play_name, play_description string, play_duration int) (err error) {
 	// 检查 play_id 是否存在于数据库中
 	play, err := mysql.NewPlayDao().SelectPlayByID(play_id)
 	if err!= nil {
@@ -79,5 +77,5 @@ func (*PlayService) UpdatePlay(play_id int64, play_name, play_description string
 	if play == nil {
 		return errors.New("剧目不存在")
 	}
-	return mysql.NewPlayDao().UpdatePlay(int(play_id), play_name, play_description, play_duration , play_price)
+	return mysql.NewPlayDao().UpdatePlay(int(play_id), play_name, play_description, play_duration)
 }

@@ -10,7 +10,7 @@ func ParseStringTime(timeStr string) (time.Time) {
 	if timeStr == "" {
 		return time.Now()	
 	}
-	parsedTime, err := time.Parse("2006-01-02 15:04:05", timeStr)
+	parsedTime, err := time.ParseInLocation("2006-01-02 15:04:05", timeStr, time.Local)
 	if err != nil {
 		return time.Now()
 	}
@@ -26,7 +26,7 @@ func ParseStringTimeToTimeStamp(timeStr string) (int64) {
 	if timeStr == "" {
 		return time.Now().Unix()
 	}
-	parsedTime, err := time.Parse("2006-01-02 15:04:05", timeStr)
+	parsedTime, err := time.ParseInLocation("2006-01-02 15:04:05", timeStr, time.Local)
 	if err!= nil {
 		return time.Now().Unix()
 	}

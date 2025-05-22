@@ -25,8 +25,7 @@ func (uc *PlayController) AddPlayHandler(c *gin.Context) {
 	play_name := req.PlayName
 	play_description := req.PlayDescription
 	play_duration := req.PlayDuration
-	play_price := req.PlayPrice
-	err := service.NewPlayService().AddPlay(play_name, play_description, play_duration, play_price)
+	err := service.NewPlayService().AddPlay(play_name, play_description, play_duration)
 	if err != nil {
 		resp.ResponseErrorWithMsg(c, resp.CodeError, err.Error())
 		return
@@ -59,8 +58,7 @@ func (*PlayController) UpdatePlayHandler(c *gin.Context) {
 	play_name := req.PlayName
 	play_description := req.PlayDescription
 	play_duration := req.PlayDuration
-	play_price := req.PlayPrice
-	err := service.NewPlayService().UpdatePlay(play_id, play_name, play_description, play_duration, play_price)
+	err := service.NewPlayService().UpdatePlay(play_id, play_name, play_description, play_duration)
 	if err!= nil {
 		resp.ResponseErrorWithMsg(c, resp.CodeError, err.Error())
 		return

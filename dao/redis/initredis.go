@@ -32,5 +32,9 @@ func InitRedis() (err error) {
     }
     log.Println("redis连接成功！")
 
+    // 初始化 PlanRedisManager 
+    RedisPlanCli = NewRedisPlanManager(Rdb)
+
     return nil
 }
+
