@@ -11,7 +11,7 @@ func NewHallDao() *HallDao {
 	return &HallDao{}
 }
 
-func (*HallDao) InsertHall(hall_name string, hall_row, hall_col int) (err error) {
+func (*HallDao) InsertHall(hall_name string, hall_row, hall_col int) (hall_id int64, err error) {
 	hall := &do.Hall{
 		HallName: hall_name,
 		HallRow:  hall_row,
@@ -19,9 +19,9 @@ func (*HallDao) InsertHall(hall_name string, hall_row, hall_col int) (err error)
 		HallTotal: hall_row * hall_col,
 	}
 	if err = DB.Create(&hall).Error; err != nil {
-		return errors.New("创建失败")	
+		return 0, errors.New("创建失败")	
 	}
-	return nil
+	return hall.HallID, nil
 }
 
 func (*HallDao) DeleteHall(hall_id int64) (err error) {
@@ -32,6 +32,7 @@ func (*HallDao) DeleteHall(hall_id int64) (err error) {
 }
 
 func (*HallDao) UpdateHall(hall_id int64, hall_name string, hall_row, hall_col int) error {
+	tx := DB.Begin()
 	hall := &do.Hall{
 		HallID: int64(hall_id),
 		HallName: hall_name,
@@ -39,9 +40,17 @@ func (*HallDao) UpdateHall(hall_id int64, hall_name string, hall_row, hall_col i
 		HallCol:  hall_col,
 		HallTotal: hall_row * hall_col,
 	}
-	if err := DB.Save(hall).Error; err != nil {
+	if err := tx.Save(hall).Error; err != nil {
+		tx.Rollback()
 		return errors.New("更新失败")
 	}
+	// 更新座位，对座位进行增删
+	err := NewSeatDao().UpdateSeat(hall_id, hall_row, hall_col)
+	if err != nil {
+		tx.Rollback()
+		return errors.New("UpdateHall -> UpdateSeat 座位更新失败")
+	}
+	tx.Commit()
 	return nil
 }
 
@@ -49,7 +58,7 @@ func (*HallDao) SelectHall(hall_id int64) (hall *do.Hall, err error) {
 	var h do.Hall
 	if err := DB.Where("hall_id = ?", hall_id).First(&h).Error; err != nil {
 		if err.Error() == "record not found" {
-			return nil, nil	
+			return nil, errors.New("SelectHall record not found")	
 		}
 		return nil, err
 	}

@@ -27,6 +27,9 @@ func ResponseError(c *gin.Context, status ResCode){
 
 // 响应成功信息：
 func ResponseSuccess(c *gin.Context, data any){
+	// if data == nil {
+	// 	data = gin.H{}
+	// }
 	c.JSON(http.StatusOK,&ResponseData{
 		Status: CodeSuccess,
 		Msg: CodeSuccess.Msg(),

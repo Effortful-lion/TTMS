@@ -122,10 +122,17 @@ func (*PlanService) AddPlan(req *dto.PlanInsertReq) error {
 	// 将 演出状态 存入 redis 中
 	err = redis.RedisPlanCli.SetPlanStatusBefore(plan_id, plan_start_time, plan_end_time)
 	if err != nil {
+		if err.Error() == "演出开始时间已过"{
+			// 数据库删除 plan
+			err := mysql.NewPlanDao().DeletePlan(plan_id)
+			if err != nil {
+				return err
+			}
+			return errors.New("演出开始时间已过")
+		}
 		return err
 	}
-	
-	return nil 
+	return nil
 }
 
 func (*PlanService) DeletePlan(plan_id int64) error {
@@ -133,7 +140,6 @@ func (*PlanService) DeletePlan(plan_id int64) error {
 	if err != nil {
 		return err	
 	}
-	// TODO redis 删除 演出计划
 	err = redis.RedisPlanCli.DeletePlanStatus(plan_id)
 	return err
 }

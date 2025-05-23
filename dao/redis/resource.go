@@ -12,7 +12,8 @@ var role = []string{common.AuthAdmin, common.AuthUser, common.AuthStaff, common.
 var resource_role = map[string][]string{
 	common.ResourceUserinfo:{common.AuthAdmin, common.AuthUser, common.AuthStaff, common.AuthManager, common.AuthTicketor, common.AuthFinance, common.AuthAccount},
 	common.ResourceManage:{common.AuthAdmin},
-	common.ResourceSale:{common.AuthAdmin, common.AuthTicketor, common.AuthUser},
+	common.ResourceSale:{common.AuthAdmin, common.AuthUser},
+	common.ResourceCollection:{common.AuthAdmin},
 }
 
 func InitRedisResource() error {

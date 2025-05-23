@@ -17,7 +17,6 @@ import (
 var Mysecret = []byte("jwt_secret")
 
 // 自定义声明 : tag 的名称和数据库没有联系
-// TODO 加一个权限字段，用于判断用户的权限（管理员/普通用户/场务员/运营经理/售票员/财务经理/会计）
 type MyClaims struct {
 	UserID    int    `json:"user_id"`
 	Username  string `json:"username"`

@@ -279,7 +279,6 @@ func (r *RedisPlanManager) updatePlanStatusInDB(planIdStr string, status int) er
 		return err
 	}
 	
-	// TODO: 实际项目中实现数据库更新逻辑
 	// fmt.Printf("同步到数据库: planID=%d, status=%d\n", planId, status)
 	err = r.mysqlcli.UpdatePlanStatus(planId, int8(status))
 	if err != nil {

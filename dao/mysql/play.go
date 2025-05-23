@@ -1,12 +1,39 @@
 package mysql
 
-import "TTMS/model/do"
+import (
+	"TTMS/model/do"
+	"errors"
+)
 
 type PlayDao struct {
 }
 
 func NewPlayDao() *PlayDao {
 	return &PlayDao{}
+}
+
+func (ud *PlayDao) SelectNamesByIDs(play_ids []int64) ([]string, error) {
+	names := make([]string, len(play_ids))
+	for i := range play_ids {
+		play_id := play_ids[i]
+		// 根据id获得name
+		name, err := ud.SelectNameByID(play_id)
+		if err != nil{return []string{}, err}
+		names[i] = name
+	}
+	return names, nil
+}
+
+func (ud *PlayDao) SelectNameByID(play_id int64) (string, error) {
+	var play do.Play
+	err := DB.First(&play, play_id).Error
+	if err != nil {
+		if err.Error() == "record not found" {
+			return "", errors.New("SelectNameByID record not found")	
+		}
+		return "", err
+	}
+	return play.PlayName, nil
 }
 
 func (ud *PlayDao) InsertPlay(play_name, play_description string, play_duration int) error {
@@ -47,7 +74,7 @@ func (*PlayDao) SelectPlayByID(play_id int64) (*do.Play, error) {
 	err := DB.Where("play_id = ?", play_id).First(&play).Error	
 	if err!= nil {
 		if err.Error() == "record not found" {
-			return nil, nil
+			return nil, errors.New("SelectPlayByID record not found")
 		}
 		return nil, err	
 	}

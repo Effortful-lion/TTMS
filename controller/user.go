@@ -91,7 +91,6 @@ func (uc *UserController) LoginHandler(c *gin.Context) {
 	res["user_id"] = user_id
 	res["token"] = token
 
-	// TODO 将token存入redis中，设置过期时间
 	if err := redis.SetToken(token, user_id, auth); err != nil {
 		resp.ResponseError(c, resp.CodeError)
 		return

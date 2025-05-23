@@ -52,7 +52,6 @@ func JWTAuthMiddleware() func(c *gin.Context) {
 		c.Set(controller.ContextUserIDKey, int64(mc.UserID))
 		c.Set(controller.ContextUserAuthorityKey, mc.Authority)
 		
-		// TODO 还有问题
 		// 检查用户权限
 		url := c.Request.URL.Path
 		resource := strings.Split(url, "/")[1]

@@ -4,6 +4,7 @@ import (
 	"TTMS/dao/mysql"
 	"TTMS/model/dto"
 	"errors"
+	"fmt"
 )
 
 type HallService struct {
@@ -14,7 +15,11 @@ func NewHallService() *HallService {
 }
 
 func (h *HallService) AddHall(hall_name string, hall_row, hall_col int) error {
-	return mysql.NewHallDao().InsertHall(hall_name,hall_row,hall_col)
+	hall_id, err := mysql.NewHallDao().InsertHall(hall_name,hall_row,hall_col)
+	if err != nil {
+		return errors.New("演出厅添加失败")
+	}
+	return mysql.NewSeatDao().GenSeat(hall_id, hall_row, hall_col)
 }
 
 func (h *HallService) DeleteHall(hall_id int64) error {
@@ -41,12 +46,16 @@ func (h *HallService) DeleteHall(hall_id int64) error {
 func (h *HallService) UpdateHall(hall_id int64, hall_name string, hall_row, hall_col int) error {
 	hall, err := mysql.NewHallDao().SelectHall(hall_id)
 	if err != nil {
-		return err
+		return fmt.Errorf("SelectHall: %s",err.Error())
 	}
 	if hall == nil {
 		return errors.New("要更新的演出厅不存在")
 	} 
-	return mysql.NewHallDao().UpdateHall(hall_id,hall_name,hall_row, hall_col)
+	err = mysql.NewHallDao().UpdateHall(hall_id,hall_name,hall_row, hall_col)
+	if err != nil {
+		return fmt.Errorf("UpdateHall: %s",err.Error())
+	}
+	return nil
 }
 
 func (h *HallService) GetHall(hall_id int64) (*dto.HallInfoResp, error) {
@@ -61,7 +70,7 @@ func (h *HallService) GetHall(hall_id int64) (*dto.HallInfoResp, error) {
 		HallCol: hall.HallCol,
 		HallTotal: hall.HallTotal,
 	}
-	return res_hall, nil 
+	return res_hall, nil
 }
 
 func (h *HallService) GetAllHall() (*dto.HallInfoListResp, error) {
