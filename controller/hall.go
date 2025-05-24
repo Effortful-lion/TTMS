@@ -29,6 +29,7 @@ func (h *HallController) AddHallHandler(c *gin.Context) {
 	err := service.NewHallService().AddHall(hall_name, hall_row, hall_col)
 	if err != nil {
 		resp.ResponseErrorWithMsg(c, resp.CodeError, err.Error())
+		return
 	}
 	resp.ResponseSuccess(c, nil)
 }

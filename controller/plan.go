@@ -5,6 +5,7 @@ import (
 	"TTMS/pkg/common"
 	"TTMS/pkg/resp"
 	"TTMS/service"
+	"fmt"
 
 	"github.com/gin-gonic/gin"
 )
@@ -43,13 +44,14 @@ func (uc *PlanController) GetPlanListHandler(c *gin.Context) {
 }
 
 func (uc *PlanController) AddPlanHandler(c *gin.Context) {
-	var req *dto.PlanInsertReq
+	var req dto.PlanInsertReq
 	if err := c.ShouldBindJSON(&req); err!= nil {
 		resp.ResponseError(c, resp.CodeInvalidParams)
 		return		
 	}
+	fmt.Println("play_id: ", req.PlayID, "plan_start_time: ", req.PlanStartTime, "plan_end_time: ", req.PlanEndTime, "plan_price: ", req.PlanPrice, "hall_id: ", req.HallID)
 	// 调用service层
-	if err := service.NewPlanService().AddPlan(req); err!= nil {
+	if err := service.NewPlanService().AddPlan(&req); err!= nil {
 		resp.ResponseErrorWithMsg(c, resp.CodeError, err.Error())
 		return
 	}
@@ -73,13 +75,13 @@ func (uc *PlanController)DeletePlanHandler(c *gin.Context) {
 }
 
 func (uc *PlanController)UpdatePlanHandler(c *gin.Context) {
-	var req *dto.PlanUpdateReq
+	var req dto.PlanUpdateReq
 	if err := c.ShouldBindJSON(&req); err!= nil {
 		resp.ResponseError(c, resp.CodeInvalidParams)
 		return
 	}
 	// 调用service层
-	if err := service.NewPlanService().UpdatePlan(req); err!= nil {
+	if err := service.NewPlanService().UpdatePlan(&req); err!= nil {
 		resp.ResponseErrorWithMsg(c, resp.CodeError, err.Error())
 		return
 	}

@@ -41,9 +41,16 @@ func (u *CustomerService) SignUp(username, password string) (err error) {
 	if user != nil {
 		return errors.New("用户名已存在")
 	}
-	if err = userdao.InsertCustomer(username, password); err != nil {
+	customer_id, err := userdao.InsertCustomer(username, password); 
+	if err != nil {
 		return errors.New("注册失败")
 	}
+	// 权限设置为普通用户
+	err = mysql.NewUserRoleDao().InsertUserRole(customer_id, common.AuthUserID)
+	if err!= nil {
+		return errors.New("权限注册失败")	
+	}
+	
 	return nil
 }
 

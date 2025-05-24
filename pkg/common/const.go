@@ -31,3 +31,24 @@ const (
 	ResourceSale = "sale"		// 售票或买票
 	ResourceCollection = "collection"	// 数据统计
 )
+
+func GetRoleID(role string) int8 {
+	switch role {
+	case AuthAdmin:
+		return AuthAdminID	
+	case AuthUser:
+		return AuthUserID
+	case AuthStaff:
+		return AuthStaffID
+	case AuthManager:
+		return AuthManagerID
+	case AuthTicketor:
+		return AuthTicketorID
+	case AuthFinance:
+		return AuthFinanceID
+	case AuthAccount:
+		return AuthAccountID
+	default:
+		return 0
+	}	
+}

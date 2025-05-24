@@ -26,11 +26,18 @@ func (*PlanService) GetPlan(plan_id int64) (*dto.PlanInfoResp, error) {
 
 	plan_start_str := common.ParseTimeToString( plan.PlanStartTime)
 	plan_end_str := common.ParseTimeToString( plan.PlanEndTime)
+
+	// 从 mysql 中获取剧目名称
+	play, err := mysql.NewPlayDao().SelectPlayByID(plan.PlayID)
+	if err!= nil {
+		return nil, err
+	}
 	
 	plan_res := &dto.PlanInfoResp{
 		PlanID: plan.PlanID,
 		PlayID: plan.PlayID,
 		HallID: plan.HallID,
+		PlayName: play.PlayName,
 		PlanStartTime: plan_start_str,
 		PlanEndTime: plan_end_str,
 		PlanPrice: plan.PlanPrice,
@@ -53,10 +60,16 @@ func (*PlanService) GetPlanList() (*dto.PlanInfoListResp, error) {
 		PlanInfoList: make([]*dto.PlanInfoResp, 0),
 	}
 	for _, plan := range plan_list {
+		// 从 mysql 中获取剧目名称
+		play, err := mysql.NewPlayDao().SelectPlayByID(plan.PlayID)
+		if err!= nil {
+			return nil, err
+		}
 		planinfo := &dto.PlanInfoResp{
 			PlanID: plan.PlanID,
 			PlayID: plan.PlayID,
 			HallID: plan.HallID,
+			PlayName: play.PlayName,
 			PlanStartTime: common.ParseTimeToString(plan.PlanStartTime),
 			PlanEndTime: common.ParseTimeToString(plan.PlanEndTime),
 			PlanPrice: plan.PlanPrice,

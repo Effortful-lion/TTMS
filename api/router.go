@@ -1,6 +1,7 @@
 package api
 
 import (
+	"TTMS/alipay"
 	"TTMS/config"
 	"TTMS/controller"
 	"TTMS/middleware"
@@ -39,7 +40,14 @@ func InitRouter() *gin.Engine {
 		CollectionGroup.GET("ticket_count", controller.NewTicketController().CountTicketListHandler)
 		// 统计单个剧目票房
 		CollectionGroup.GET("ticket_count/:play_id", controller.NewTicketController().CountTicketHandler)
-
+		// 统计单场演出票房
+		CollectionGroup.GET("ticket_count/once/:plan_id", controller.NewTicketController().CountOnceTicketHandler)
+		// 剧目单场票房占比
+		CollectionGroup.GET("ticket_count/percentage/:plan_id", controller.NewTicketController().CountOnceTicketPercentageHandler)
+		// 单场上座率统计
+		CollectionGroup.GET("seat_count/percentage/once/:plan_id", controller.NewTicketController().CountOnceSeatHandler)
+		// 剧目上座率统计
+		CollectionGroup.GET("seat_count/percentage/:play_id", controller.NewTicketController().CountSeatHandler)
 	}
 
 	SaleGroup := r.Group("/sale")
@@ -55,6 +63,11 @@ func InitRouter() *gin.Engine {
 			SaleGroup.GET("/ticket", controller.NewTicketController().GetTicketListHandler)
 			// 核销票
 			SaleGroup.PUT("/ticket/verify", controller.NewTicketController().VerifyHandler)
+
+			// 支付宝支付
+			SaleGroup.GET("/alipay", alipay.Pay)
+			SaleGroup.GET("/alipay/return", alipay.Callback)
+			SaleGroup.GET("/alipay/notify", alipay.Notify)
 		}
 
 		// employ

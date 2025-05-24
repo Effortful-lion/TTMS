@@ -164,6 +164,7 @@ func (sd *SeatDao) SelectSeatByID(seat_id int64) (*do.Seat, error) {
 
 // 返回 false 为没座，返回 true 为有座
 func (sd *SeatDao) CheckSeat(hall_id int64, row, col int) (int64, bool, error) {
+	fmt.Println("hall_id, row, col", hall_id, row, col)
 	seat, err := sd.SelectSeat(hall_id, row, col)
 	if err != nil { return 0, false, err}
 	return seat.SeatID ,seat.SeatStatus == do.SeatstatusSold, nil

@@ -6,6 +6,8 @@ require (
 	github.com/gin-gonic/gin v1.10.1
 	github.com/golang-jwt/jwt/v4 v4.5.2
 	github.com/redis/go-redis/v9 v9.8.0
+	github.com/smartwalle/alipay/v3 v3.2.25
+	github.com/smartwalle/xid v1.0.7
 	github.com/spf13/viper v1.20.1
 	gorm.io/driver/mysql v1.5.7
 	gorm.io/gorm v1.26.1
@@ -37,6 +39,9 @@ require (
 	github.com/modern-go/reflect2 v1.0.2 // indirect
 	github.com/pelletier/go-toml/v2 v2.2.3 // indirect
 	github.com/sagikazarmark/locafero v0.7.0 // indirect
+	github.com/smartwalle/ncrypto v1.0.4 // indirect
+	github.com/smartwalle/ngx v1.0.9 // indirect
+	github.com/smartwalle/nsign v1.0.9 // indirect
 	github.com/sourcegraph/conc v0.3.0 // indirect
 	github.com/spf13/afero v1.12.0 // indirect
 	github.com/spf13/cast v1.7.1 // indirect

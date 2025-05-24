@@ -1,6 +1,7 @@
 package main
 
 import (
+	"TTMS/alipay"
 	"TTMS/api"
 	"TTMS/config"
 	"TTMS/dao/mysql"
@@ -32,6 +33,9 @@ func main() {
 
 	// 启动状态监听
 	go redis.RedisPlanCli.Start()
+
+	// TODO 初始化支付宝
+	alipay.InitAliPay()
 
 	r := api.InitRouter()
 

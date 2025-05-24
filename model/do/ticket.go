@@ -20,6 +20,7 @@ type Ticket struct {
 	PlayID 		 int64 					`gorm:"column:play_id;type:int;not null"`
 	SeatID       int64    				 `gorm:"column:seat_id;type:int;not null"`
 	PlanID       int64     				`gorm:"column:plan_id;type:int;not null"`
+	Role         int8     				 `gorm:"column:role;type:tinyint;not null"`
 	CustomerName string 				`gorm:"column:customer_name;type:varchar(100);not null"`
 	TicketPrice  float64  				 `gorm:"column:ticket_price;type:float(10,2);not null"`
 	TicketStatus int8     				 `gorm:"column:ticket_status;type:tinyint;not null"`

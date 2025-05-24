@@ -13,6 +13,46 @@ func NewTicketDao() *TicketDao {
 	return &TicketDao{}
 }
 
+// 根据 plan_id 查票数量
+func (td *TicketDao) CountTicketByPlanID(plan_id int64) (int64, error) {
+	var res int64
+	err := DB.Model(&do.Ticket{}).Where("plan_id =?", plan_id).Count(&res).Error	
+	if err!= nil {
+		return 0, errors.New("根据 plan_id 查票数量有误")	
+	}
+	return res, nil
+}
+
+// 根据 play_id 查票数量
+func (td *TicketDao) CountTicketByPlayID(play_id int64) (int64, error) {
+	var res int64
+	err := DB.Model(&do.Ticket{}).Where("play_id =?", play_id).Count(&res).Error	
+	if err!= nil {
+		return 0, errors.New("根据 play_id 查票数量有误")	
+	}
+	return res, nil
+}
+
+// 根据 plan_id 和 ticket_status 查票
+func (td *TicketDao) CountUsedTicketByPlanID(plan_id int64, ticket_status int8) (int64, error) {
+	var res int64
+	err := DB.Model(&do.Ticket{}).Where("plan_id = ? and ticket_status = ?", plan_id, ticket_status).Count(&res).Error
+	if err!= nil {
+		return 0, errors.New("根据 plan_id 和 ticket_status 查票有误")	
+	}
+	return res, nil
+}
+
+// 根据 play_id 和 ticket_status 查票
+func (td *TicketDao) CountUsedTicketByPlayID(play_id int64, ticket_status int8) (int64, error) {
+	var res int64
+	err := DB.Model(&do.Ticket{}).Where("play_id = ? and ticket_status = ?", play_id, ticket_status).Count(&res).Error
+	if err!= nil {
+		return 0, errors.New("根据 plan_id 和 ticket_status 查票有误")	
+	}
+	return res, nil
+}
+
 // 票房统计：统计总金额(元)
 func (td *TicketDao) CountTicket(play_ids []int64) ([]float64, error) {
 	var err error
@@ -24,6 +64,20 @@ func (td *TicketDao) CountTicket(play_ids []int64) ([]float64, error) {
 		if err != nil {
 			return nil, err
 		}
+	}
+	return res, nil
+}
+
+func (td *TicketDao) CountOnceTicketEvery(play_id, plan_id int64) (float64, error){
+	var res float64
+	// 根据 play_id 和 plan_id 查询 单场的 票总金额
+	var temp_ticket []do.Ticket
+	err := DB.Model(&do.Ticket{}).Where("play_id = ? and plan_id = ?", play_id, plan_id).Find(&temp_ticket).Error
+	if err != nil {
+		return 0, errors.New("根据 play_id 和 plan_id 查询单场次票总金额有误")
+	}
+	for j := range temp_ticket{
+		res += temp_ticket[j].TicketPrice
 	}
 	return res, nil
 }
@@ -98,7 +152,7 @@ func (td *TicketDao) CancelTicket(ticketID int64) error {
 	return DB.Delete(&do.Ticket{}, ticketID).Error
 }
 
-func (td *TicketDao) InsertTicket(customerID int64, planID int64, seatID int64, customerName string, ticketPrice float64, ticketExpireTime time.Time, playID int64) (err error) {
+func (td *TicketDao) InsertTicket(customerID int64, planID int64, seatID int64, customerName string, ticketPrice float64, ticketExpireTime time.Time, playID int64, role int8) (err error) {
 	ticket := &do.Ticket{
 		CustomerID: customerID,
 		CustomerName: customerName,
@@ -108,6 +162,7 @@ func (td *TicketDao) InsertTicket(customerID int64, planID int64, seatID int64, 
 		TicketPrice: ticketPrice,
 		TicketExpireTime: ticketExpireTime,
 		TicketStatus: do.TicketStatusUnUsed,
+		Role: role,
 	}
 	return DB.Create(ticket).Error
 }

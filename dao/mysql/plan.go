@@ -35,9 +35,6 @@ func (*PlanDao) SelectPlanByID(plan_id int64) (*do.Plan, error) {
 	plan := do.Plan{}
 	err := DB.Where("plan_id = ?", plan_id).First(&plan).Error
 	if err != nil {
-		if err.Error() == "record not found" {
-			return nil, nil
-		}
 		return nil, err
 	}
 	return &plan, nil
