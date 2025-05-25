@@ -3,6 +3,8 @@ package redis
 import (
 	"TTMS/pkg/common"
 	"context"
+	"time"
+	"TTMS/dao/mysql"
 )
 
 // 初始化的时候，给角色和权限设置好
@@ -57,4 +59,50 @@ func SetResourceRole(resource_role map[string][]string) error {
 func SetResourceIsMember(resource, role string) bool {
 	key := "resource:" + resource
 	return Rdb.SIsMember(context.Background(), key, role).Val()
+}
+
+// TODO 定时同步角色-资源权限表
+func SyncRoleResource() error {
+	tk := time.NewTicker(1 * time.Hour)
+	for range tk.C {
+		// 遍历所有资源，查询所有角色
+		// eg: resource:userinfo, resource:manage, resource:sale, resource:collection
+		keys, err := Rdb.Keys(context.Background(), "resource:*").Result()
+		if err!= nil {
+			return err
+		}
+		// keys: []string{"resource:userinfo", "resource:manage", "resource:sale", "resource:collection"}
+		// 需要的是 []string{"userinfo", "manage", "sale", "collection"}
+		for _, v := range keys {
+			// 分割字符串，获取资源名
+			resource := v[8:] // 从第8个字符开始，获取资源名
+			// 插入资源名
+			err := mysql.NewResourceDao().InsertResource(resource)
+			if err!= nil {
+				return err	
+			}
+			// 获取资源的角色列表
+			roles, err := Rdb.SMembers(context.Background(), "resource:"+resource).Result()
+			if err!= nil {
+				return err
+			}
+			// roles: []string{"admin", "user", "staff", "manager", "ticketor", "finance", "account"}
+			// 遍历角色列表，设置角色-资源权限表
+			for _, role := range roles {
+				// 调用 mysql 的函数，设置角色-资源权限表
+				role_id := common.GetRoleID(role)
+				resource_id, err := mysql.NewResourceDao().SelectResourceByName(resource)
+				if err!= nil {
+					return err
+				}
+				err = mysql.NewUserRoleDao().SyncRoleResource(int64(role_id), resource_id)
+				if err!= nil {
+					return err
+				}
+			}	
+		}
+		
+	}
+	
+	return nil
 }

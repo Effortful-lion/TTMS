@@ -34,6 +34,11 @@ func main() {
 	// 启动状态监听
 	go redis.RedisPlanCli.Start()
 
+	// 同步 redis 和 mysql 的数据
+	if err := redis.SyncRoleResource(); err != nil {
+		fmt.Println(err)
+	}
+
 	// TODO 初始化支付宝
 	alipay.InitAliPay()
 
@@ -41,5 +46,4 @@ func main() {
 
 	httpPort := config.Conf.AppConfig.HttpPort
 	r.Run(fmt.Sprintf(":%d", httpPort))
-
 }

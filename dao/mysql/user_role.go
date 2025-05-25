@@ -20,3 +20,12 @@ func (ud *UserRoleDao)SelectRoleByUserID(user_id int64) (string, error) {
 	}
 	return role.RoleName, nil
 }
+
+func (ud *UserRoleDao)SyncRoleResource(roleID, resourceID int64) (error) {
+	// 插入前先检查是否存在同名资源
+	var count int64
+	if err := DB.Model(&do.RoleResource{}).Where("role_id =? AND resource_id =?", roleID, resourceID).Count(&count).Error; err!= nil {
+		return err
+	}
+	return DB.Create(&do.RoleResource{RoleID: roleID, ResourceID: resourceID}).Error
+}

@@ -38,7 +38,34 @@ func InitMysql() (err error) {
 	sqlDB.SetMaxIdleConns(cfg.MaxIdleConns)
 	log.Println("mysql连接成功！")
 	MigrateTables()
+	// 初始化角色信息
+	InitRole()
 	return
+}
+
+func InitRole() {
+	// 初始化角色信息
+	roles := []do.Role{
+		{RoleName: "admin"},
+		{RoleName: "staff"},
+		{RoleName: "manager"},
+		{RoleName: "ticketor"},
+		{RoleName: "finance"},
+		{RoleName: "account"},
+		{RoleName: "customer"},
+	}
+
+	for _, role := range roles {
+		var count int64
+		// 检查角色是否已存在
+		DB.Model(&do.Role{}).Where("role_name = ?", role.RoleName).Count(&count)
+		if count == 0 {
+			// 角色不存在，插入数据
+			if err := DB.Create(&role).Error; err != nil {
+				log.Fatalf("Failed to insert role %s: %v", role.RoleName, err)
+			}
+		}
+	}
 }
 
 // 自动迁移表结构
