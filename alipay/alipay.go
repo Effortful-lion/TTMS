@@ -101,40 +101,9 @@ func Callback(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": fmt.Sprintf("验证订单 %s 信息发生错误: %s-%s", outTradeNo, rsp.Msg, rsp.SubMsg)})
 		return
 	}
+	// TODO 支付成功，插入票数据库
+	
 	c.JSON(http.StatusOK, gin.H{"message": fmt.Sprintf("订单 %s 支付成功", outTradeNo)})
-}
-
-// 支付成功的通知接口
-func Notify2(c *gin.Context) {
-	if err := c.Request.ParseForm(); err != nil {
-		log.Println("解析表单数据失败", err)
-		return
-	}
-
-	var notification, err = client.DecodeNotification(c.Request.Form)
-	if err != nil {
-		log.Println("解析异步通知发生错误", err)
-		return
-	}
-
-	log.Println("解析异步通知成功:", notification.NotifyId)
-
-	var p = alipay.NewPayload("alipay.trade.query")
-	p.AddBizField("out_trade_no", notification.OutTradeNo)
-
-	var rsp *alipay.TradeQueryRsp
-	if err = client.Request(context.Background(), p, &rsp); err != nil {
-		log.Printf("异步通知验证订单 %s 信息发生错误: %s \n", notification.OutTradeNo, err.Error())
-		return
-	}
-	if rsp.IsFailure() {
-		log.Printf("异步通知验证订单 %s 信息发生错误: %s-%s \n", notification.OutTradeNo, rsp.Msg, rsp.SubMsg)
-		return
-	}
-
-	log.Printf("订单 %s 支付成功 \n", notification.OutTradeNo)
-
-	client.ACKNotification(c.Writer)
 }
 
 func Notify(c *gin.Context) {
@@ -168,3 +137,36 @@ func Notify(c *gin.Context) {
 	client.ACKNotification(c.Writer)
 	resp.ResponseSuccess(c, nil)
 }
+
+// // 支付成功的通知接口
+// func Notify2(c *gin.Context) {
+// 	if err := c.Request.ParseForm(); err != nil {
+// 		log.Println("解析表单数据失败", err)
+// 		return
+// 	}
+
+// 	var notification, err = client.DecodeNotification(c.Request.Form)
+// 	if err != nil {
+// 		log.Println("解析异步通知发生错误", err)
+// 		return
+// 	}
+
+// 	log.Println("解析异步通知成功:", notification.NotifyId)
+
+// 	var p = alipay.NewPayload("alipay.trade.query")
+// 	p.AddBizField("out_trade_no", notification.OutTradeNo)
+
+// 	var rsp *alipay.TradeQueryRsp
+// 	if err = client.Request(context.Background(), p, &rsp); err != nil {
+// 		log.Printf("异步通知验证订单 %s 信息发生错误: %s \n", notification.OutTradeNo, err.Error())
+// 		return
+// 	}
+// 	if rsp.IsFailure() {
+// 		log.Printf("异步通知验证订单 %s 信息发生错误: %s-%s \n", notification.OutTradeNo, rsp.Msg, rsp.SubMsg)
+// 		return
+// 	}
+
+// 	log.Printf("订单 %s 支付成功 \n", notification.OutTradeNo)
+
+// 	client.ACKNotification(c.Writer)
+// }
