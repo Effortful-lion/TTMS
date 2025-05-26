@@ -44,6 +44,8 @@ func InitRouter() *gin.Engine {
 		CollectionGroup.GET("ticket_count/once/:plan_id", controller.NewTicketController().CountOnceTicketHandler)
 		// 剧目单场票房占比
 		CollectionGroup.GET("ticket_count/percentage/:plan_id", controller.NewTicketController().CountOnceTicketPercentageHandler)
+		// 剧目场次票房占比
+		CollectionGroup.GET("ticket_count/percentage/play/:play_id", controller.NewTicketController().CountTicketPercentageHandler)
 		// 单场上座率统计
 		CollectionGroup.GET("seat_count/percentage/once/:plan_id", controller.NewTicketController().CountOnceSeatHandler)
 		// 剧目上座率统计

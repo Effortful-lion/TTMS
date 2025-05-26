@@ -27,7 +27,7 @@ func (uc *PlanController) GetPlanHandler(c *gin.Context) {
 	// 调用service层
 	plan, err := service.NewPlanService().GetPlan(plan_id)
 	if err!= nil {
-		resp.ResponseError(c, resp.CodeError)
+		resp.ResponseErrorWithMsg(c, resp.CodeError, err.Error())
 		return
 	}
 	resp.ResponseSuccess(c, plan)

@@ -1,10 +1,11 @@
 package redis
 
 import (
+	"TTMS/dao/mysql"
 	"TTMS/pkg/common"
 	"context"
+	"fmt"
 	"time"
-	"TTMS/dao/mysql"
 )
 
 // 初始化的时候，给角色和权限设置好
@@ -29,6 +30,7 @@ func InitRedisResource() error {
 	if err!= nil {
 		return err
 	}
+	fmt.Println("初始化资源权限成功")
 	return nil
 }
 

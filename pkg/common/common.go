@@ -1,6 +1,7 @@
 package common
 
 import (
+	"TTMS/model/dto"
 	"fmt"
 	"math"
 	"strconv"
@@ -64,4 +65,16 @@ func ParseStringToInt64(str string) (int64, error) {
 	}
 	str_to_id, err := strconv.Atoi(str)
 	return int64(str_to_id), err
+}
+
+// 结构体排名
+func SortStructByField(data []dto.TicketCountResp, field string) {
+	// 根据 field 字段对 data 进行排序
+	for i := 0; i < len(data)-1; i++ {
+		for j := i + 1; j < len(data); j++ {
+			if data[i].TotalMoney < data[j].TotalMoney {
+				data[i], data[j] = data[j], data[i]
+			}
+		}
+	}
 }

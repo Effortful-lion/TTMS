@@ -51,6 +51,7 @@ func (r *RedisPlanManager) Start() {
 	go r.watchPlanStatus()
 	go r.updatePlanStatus()
 	go r.syncPlanStatus()
+	fmt.Println("RedisPlanManager 启动成功")
 }
 
 // 优雅关闭所有服务

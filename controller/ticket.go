@@ -60,6 +60,22 @@ func (t *TicketController) CountTicketListHandler(c *gin.Context) {
 	resp.ResponseSuccess(c, data)
 }
 
+func (t *TicketController) CountTicketPercentageHandler(c *gin.Context) {
+	// 按照 场次 ，返回 {场次, 占比} 列表
+	strid := c.Param("play_id")
+	play_id, err := strconv.ParseInt(strid, 10, 64)
+	if err!= nil {
+		resp.ResponseError(c, resp.CodeInvalidParams)
+		return
+	}
+	data, err := service.NewTicketService().CountTicketPercentageByID(play_id)
+	if err!= nil {
+		resp.ResponseErrorWithMsg(c, resp.CodeError, err.Error())
+		return
+	}
+	resp.ResponseSuccess(c, data)
+}
+
 func (t *TicketController) CountOnceTicketPercentageHandler(c *gin.Context) {
 	strid := c.Param("plan_id")
 	plan_id, err := strconv.ParseInt(strid, 10, 64)

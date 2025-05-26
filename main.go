@@ -35,9 +35,7 @@ func main() {
 	go redis.RedisPlanCli.Start()
 
 	// 同步 redis 和 mysql 的数据
-	if err := redis.SyncRoleResource(); err != nil {
-		fmt.Println(err)
-	}
+	go redis.SyncRoleResource()
 
 	// TODO 初始化支付宝
 	alipay.InitAliPay()

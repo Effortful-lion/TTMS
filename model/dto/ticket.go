@@ -47,5 +47,10 @@ type TicketCountResp struct {
 }
 
 type TicketCountListResp struct { 
-	TicketCountList []*TicketCountResp `json:"ticket_count_list"`
+	TicketCountList []TicketCountResp `json:"ticket_count_list"`
+}
+
+type TicketPlanPercentageResp struct {
+	PlanID        int64   `json:"plan_id"`		// 场次ID
+	Percentage    float64 `json:"percentage"`		// 占比
 }

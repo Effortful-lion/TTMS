@@ -18,7 +18,9 @@ const (
 	kAppId      = "2021000149606440" // 你的支付宝应用id
 	kPrivateKey = "MIIEowIBAAKCAQEAiIfp7pyLgANBYU4xCPUPJxfudowHE71gOdIEJduRJl9iHsrxOrarK7ZR7touIv9qxdSNUtDAlKE6TA/IYXtR7OOEjVv2EbHjrUC+0OODc7oVu6A/FkTyqBSLsV/YbndlLa0d6bnLBJqlYd+/238KzAZNEMS4v1VdajiQCgOf43CLGIrzLJnrDRagoYHaY4ASR4YCOcLCI0Jl3f9NJFgodQBjM12rCQLcQqMNdc99g1Nkqo7lKEd2FE1OBXNLGdtVyS6liNwSrCYlddeTk77IkrlG2osZ7wr/tuhHT6uQXgT4Mk2EaA3KdiIMDgfyHt6vqkmOdyF96OM+boc+W+h0NQIDAQABAoIBACZ78ROiKqwtvrsX2DiHIvtJAp2FwOTuh3Yk3ahyKIrhbf3yBGchYERVAulJtKGGz2juDdvfHbmHbLBN7pSTtzcHtrBF0KmSM/P9AQxOZRo0xLV7aOz1CFUaXXnk41PX8bwbRQhBp5knoiBhemn7eGakDAsC+HRuMoOjZ+56sRHhmLxcuODRgvRKfAMVEDYF0Jgh+EGXH0+cBrjqGNFFyWFd6Y1GkjryBZPT/Uwng8zndQgHwDqLfDo0VgW5eWtW3KtPPtt33hILeI6sS73NlK6KfzTz3tU+MNv8D2QWAwznKBSRG46ofLy9RKwfiKYazOrA6uHGREQVUYCvTjg3hq0CgYEAxJD2it3GZkpP2W7B+V1ecu6vM6aE4MaodPHVu51tXAp2LBPrcTpTdjYmEfjlRW0DsjtouDoqJ7PhIHw32WQtp3LLNwNMnBOoXEh2BJ0FkeUc6ezLAsq6zH8kVv5bWg3j+/soXZ5kgY2K/yv9Mfa6Qw7YGN+uCEjdk6/DU1RSTmcCgYEAsc/3x8E4GoOJOvJgtixy0nhbvfAOyr/D1FWKpd2TvziefaTXmrk3LDUSFFx2QWTa8ZesUWaEbVqNhGlS9ZXpb9XQgZgpZ6+EFTpzhtBYlqTAxYl46xlvMvrVJS8iPjolp9ZmPbngVmAdolY2FoLrlAMI1gUw4oDHKLN5QI3qjwMCgYBycqz5obL4r9/aC4DpPhHV/V8JRbUsYr6GiKAXQsv/wR+Y/mghXwJlW5XC9RYY3CZAyhJo4YTV5Qf5MBocexWR32auuz8JyPBH+vCsMvihP7McCIETORKWKpjwBd0Oi/PoLQ4NpEGEpPL/K4+aXbuJe8UahnH/5N0ONlIV3IynlQKBgHpCqvZ4jqD8bHFRktnv+gtponsZArK55GatYqXlkt9aiO+PVogWbi9BVmsVoGIafMi9J0jZGpkuODwhR1+Bcn7pH3LcMywN7N3D0QeTXjZGlh29Bp1wYZtGCSSGIh9zT8z1iFtM4UnC0N18NbiI0H53D65I53H2ZfpAXVDbw7oNAoGBALy+U5zkMib06fn2uTJeMp5VdMWFBMUBi4d39rZ/gCLggDDYsO4Z8PzzR9DcCVBaYXwCmpYmXnIYSRqw5lrIL67Iy5CtA7GDcSwnQPxj6xW3oLOeqL033kBhfCHUXvDsQA4KpJCmNvKN96VD8uay8S5k5sgjmQ0UQJXofOOG5tm5"
 	// TODO 设置回调地址域名
-	kServerDomain = "http://frp-cup.com:43223" // 内网穿透地址，不定期更换
+	kServerDomain = "http://1.94.214.117:9999" // 服务器地址/内网穿透地址，不定期更换
+	// http://1.94.214.117:9999/sale/alipay/callback
+	// http://frp-cup.com:43223
 )
 
 // 支付宝支付初始化
@@ -61,11 +63,13 @@ func Pay(c *gin.Context) {
 	p.ReturnURL = kServerDomain + "/sale/alipay/callback"
 	p.Subject = "本次支付订单号:" + tradeNo
 	p.OutTradeNo = tradeNo                   //订单号，一个订单号只能支付一次  time.Now().String()
+	// TODO 动态生成 金额
 	p.TotalAmount = "10.00"                  // 金额
 	p.ProductCode = "FAST_INSTANT_TRADE_PAY" //销售产品码，与支付宝签约的产品码名称,目前仅支持FAST_INSTANT_TRADE_PAY
 
 	url, _ := client.TradePagePay(p)
-	c.Redirect(http.StatusTemporaryRedirect, url.String())
+	//c.Redirect(http.StatusTemporaryRedirect, url.String())
+	resp.ResponseSuccess(c, url.String())
 }
 
 // 支付宝支付成功的回调接口

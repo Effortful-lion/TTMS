@@ -16,12 +16,50 @@ func NewTicketService() *TicketService {
 	return &TicketService{}
 }
 
+func (t *TicketService) CountTicketPercentageByID(play_id int64) ([]*dto.TicketPlanPercentageResp, error) {
+	// 通过 play_id 查 所有票的数量
+	total, err := mysql.NewTicketDao().CountTicketByPlayID(play_id)	
+	if err!= nil {
+		return nil, err
+	}
+	// 通过 play_id 查到所有 的 plan_id
+	plan_ids, err := mysql.NewPlanDao().SelectPlanIDsByPlayID(play_id)
+	if err!= nil {
+		return nil, err
+	}
+	// 遍历 plan_ids 查每个 plan_id 的票的数量
+	// 计算 占比
+	var resp []*dto.TicketPlanPercentageResp
+	for _, plan_id := range plan_ids {
+		// 查 plan_id 的票的数量
+		part, err := mysql.NewTicketDao().CountTicketByPlanID(plan_id)	
+		if err!= nil {
+			return nil, err
+		}
+		// 查 plan_id 的票的占比
+		percentage := common.CalculatePercentageFloat(float64(part), float64(total))
+		resp = append(resp, &dto.TicketPlanPercentageResp{
+			PlanID:     plan_id,
+			Percentage: percentage,	
+		})
+	}
+	return resp, nil
+}
+
 func (t *TicketService) CountOnceSeat(plan_id int64) (float64, error) {
-	// 通过 plan_id 查 所有票的数量
-	total, err := mysql.NewTicketDao().CountTicketByPlanID(plan_id)
+	// 通过 plan_id 查 hall_id 的对应的座位
+	plan, err := mysql.NewPlanDao().SelectPlanByID(plan_id)
 	if err!= nil {
 		return 0, err
 	}
+	hall_id := plan.HallID
+	// 通过 hall_id 查 所有座位的数量
+	hall, err := mysql.NewHallDao().SelectHall(hall_id)
+	if err!= nil {
+		return 0, err
+	}
+	total := hall.HallTotal
+	
 	// 通过 plan_id 和 ticket_status 查 所有已核销票的数量
 	part, err := mysql.NewTicketDao().CountUsedTicketByPlanID(plan_id, do.TicketStatusUsed)
 	if err!= nil {
@@ -132,18 +170,21 @@ func (t *TicketService) CountTicket() (*dto.TicketCountListResp, error) {
 	}
 	// 赋值 map
 	res := &dto.TicketCountListResp{
-		TicketCountList: make([]*dto.TicketCountResp, len(play_ids)),
+		TicketCountList: make([]dto.TicketCountResp, 0),
 	}
 	now := time.Now()
 	for i := range data {
 		money := data[i]
 		name := names[i]
-		res.TicketCountList = append(res.TicketCountList, &dto.TicketCountResp{
+		res.TicketCountList = append(res.TicketCountList, dto.TicketCountResp{
 			PlayName:   name,
 			TotalMoney: money,
 			CountTime:  now,
 		})
 	}
+	// sort
+	common.SortStructByField(res.TicketCountList, "TotalMoney")
+	
 	return res, nil
 }
 
