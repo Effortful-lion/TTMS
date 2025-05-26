@@ -152,7 +152,7 @@ func (td *TicketDao) CancelTicket(ticketID int64) error {
 	return DB.Delete(&do.Ticket{}, ticketID).Error
 }
 
-func (td *TicketDao) InsertTicket(customerID int64, planID int64, seatID int64, customerName string, ticketPrice float64, ticketExpireTime time.Time, playID int64, role int8) (err error) {
+func (td *TicketDao) InsertTicket(customerID int64, planID int64, seatID int64, customerName string, ticketPrice float64, ticketExpireTime time.Time, playID int64, role int8) (id int64, err error) {
 	ticket := &do.Ticket{
 		CustomerID: customerID,
 		CustomerName: customerName,
@@ -164,5 +164,7 @@ func (td *TicketDao) InsertTicket(customerID int64, planID int64, seatID int64, 
 		TicketStatus: do.TicketStatusUnUsed,
 		Role: role,
 	}
-	return DB.Create(ticket).Error
+	err = DB.Create(ticket).Pluck("ticket_id", &ticket.TicketID).Error
+	if err!= nil {return 0, err}
+	return ticket.TicketID, nil
 }

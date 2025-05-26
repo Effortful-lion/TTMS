@@ -5,7 +5,6 @@ import (
 	"TTMS/pkg/common"
 	"TTMS/pkg/resp"
 	"TTMS/service"
-	"fmt"
 
 	"github.com/gin-gonic/gin"
 )
@@ -49,7 +48,10 @@ func (uc *PlanController) AddPlanHandler(c *gin.Context) {
 		resp.ResponseError(c, resp.CodeInvalidParams)
 		return		
 	}
-	fmt.Println("play_id: ", req.PlayID, "plan_start_time: ", req.PlanStartTime, "plan_end_time: ", req.PlanEndTime, "plan_price: ", req.PlanPrice, "hall_id: ", req.HallID)
+	if common.TimeAfter(req.PlanStartTime, req.PlanEndTime){
+		resp.ResponseErrorWithMsg(c, resp.CodeInvalidParams, "结束时间一定晚于开始时间")
+		return	
+	}
 	// 调用service层
 	if err := service.NewPlanService().AddPlan(&req); err!= nil {
 		resp.ResponseErrorWithMsg(c, resp.CodeError, err.Error())

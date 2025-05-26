@@ -54,6 +54,10 @@ func InitRouter() *gin.Engine {
 
 	SaleGroup := r.Group("/sale")
 	SaleGroup.Use(middleware.JWTAuthMiddleware())
+	// 支付宝支付
+	r.POST("/alipay", alipay.Pay)
+	r.GET("/alipay/callback", alipay.Callback)
+	r.POST("/alipay/notify", alipay.Notify)
 	{
 		// customer/admin（admin为了调试）
 		{
@@ -65,11 +69,6 @@ func InitRouter() *gin.Engine {
 			SaleGroup.GET("/ticket", controller.NewTicketController().GetTicketListHandler)
 			// 核销票
 			SaleGroup.PUT("/ticket/verify", controller.NewTicketController().VerifyHandler)
-
-			// 支付宝支付
-			SaleGroup.GET("/alipay", alipay.Pay)
-			SaleGroup.GET("/alipay/return", alipay.Callback)
-			SaleGroup.GET("/alipay/notify", alipay.Notify)
 		}
 
 		// employ

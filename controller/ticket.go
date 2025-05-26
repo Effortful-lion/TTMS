@@ -158,7 +158,7 @@ func (t *TicketController) CancelHandler(c *gin.Context) {
 		return
 	}
 	fmt.Println(req.TicketID)
-	err := service.NewTicketService().CancelTicket(&req)
+	err := service.NewTicketService().CancelTicket(req.TicketID)
 	if err != nil {
 		resp.ResponseErrorWithMsg(c, resp.CodeError, err.Error())
 		return
@@ -167,7 +167,7 @@ func (t *TicketController) CancelHandler(c *gin.Context) {
 }
 
 // 买票
-func (t *TicketController) BuyHandler(c *gin.Context) {
+func (t *TicketController)  BuyHandler(c *gin.Context) {
 	var req *dto.TicketBuyReq
 	if err := c.ShouldBindJSON(&req); err != nil {
 		resp.ResponseError(c, resp.CodeInvalidParams)
@@ -175,10 +175,13 @@ func (t *TicketController) BuyHandler(c *gin.Context) {
 	}
 	customerID := GetCurrentUserID(c)
 	auth := GetCurrentUserAuthority(c)
-	err := service.NewTicketService().BuyTicket(customerID, auth, req)
+	ticketID, price, err := service.NewTicketService().BuyTicket(customerID, auth, req)
 	if err != nil {
 		resp.ResponseErrorWithMsg(c, resp.CodeError, err.Error())
 		return
 	}
-	resp.ResponseSuccess(c, nil)
+	resp.ResponseSuccess(c, dto.TicketPayReq{
+		TicketID: ticketID,
+		Money: price,
+	})
 }

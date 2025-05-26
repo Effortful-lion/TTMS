@@ -6,6 +6,8 @@ import (
 	"math"
 	"strconv"
 	"time"
+
+	"github.com/gin-gonic/gin"
 )
 
 func ToTwoDecimal(num float64) float64 {
@@ -77,4 +79,21 @@ func SortStructByField(data []dto.TicketCountResp, field string) {
 			}
 		}
 	}
+}
+
+// 放入context中
+func SetContext(c *gin.Context, key string, value interface{}) {
+	c.Set(key, value)
+}
+
+// 从context中取出
+func GetContext(c *gin.Context, key string) (interface{}, bool) {
+	value, exists := c.Get(key)
+	return value, exists	
+}
+
+// 比较时间前后// 比较时间前后
+// 前面的早于后面的返回 true
+func TimeAfter(start, end string) bool {
+    return ParseStringTimeToTimeStamp(start) < ParseStringTimeToTimeStamp(end)
 }
