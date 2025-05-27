@@ -154,7 +154,7 @@ func (td *TicketDao) GetTicketByID(ticketID int64) (*do.Ticket, error) {
 func (td *TicketDao) GetTicketList(customerID int64) ([]*do.Ticket, error) {
 	var tickets []do.Ticket
 	// 查询客户未过期且状态小于 2 的票
-	err := DB.Where("customer_id = ? AND ticket_status < 2 AND ticket_expire_time > NOW()", customerID).
+	err := DB.Where("customer_id = ?", customerID).
 		Find(&tickets).Error
 	if err != nil {
 		return nil, err
