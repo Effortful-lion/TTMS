@@ -2,11 +2,16 @@ package service
 
 import (
 	"TTMS/dao/mysql"
+	"TTMS/dao/redis"
 	"TTMS/model/do"
 	"TTMS/model/dto"
 	"TTMS/pkg/common"
 	"errors"
 	"time"
+)
+
+const(
+	TicketExpiredTime = 5 * time.Minute
 )
 
 type TicketService struct {
@@ -304,7 +309,7 @@ func (t *TicketService) CancelTicket(ticketID int64) error {
 	return nil
 }
 
-func (t *TicketService) BuyTicket(customerID int64, auth string, req *dto.TicketBuyReq) (TicketID int64,Price float64, err error) {
+func (t *TicketService) BuyTicket(customerID int64, auth string, req *dto.TicketBuyReq) (data *dto.TicketPayResp,err error) {
 	plan_id := req.PlanID
 	seat_row := req.SeatRow
 	seat_col := req.SeatCol
@@ -312,50 +317,49 @@ func (t *TicketService) BuyTicket(customerID int64, auth string, req *dto.Ticket
 	planDao := mysql.NewPlanDao()
 	plan, err := planDao.SelectPlanByID(plan_id)
 	if err != nil {
-		return 0, 0, err
+		return nil, err
 	}
 	ticket_price := plan.PlanPrice
 	plan_start_time := plan.PlanStartTime
 	ticket_expire_time := plan_start_time.Add(do.TicketExpiredTime)
 	// 检查 买票时间 和 plan的时间
 	if time.Now().After(ticket_expire_time) {
-		return 0, 0, errors.New("该计划已过期，不可买票")
+		return nil, errors.New("该计划已过期，不可买票")
 	}
 	var customer_name string
 	switch auth {
 	case common.AuthAdmin:
 		customer, err := mysql.NewEmployDao().SelectEmployByID(customerID)
 		if err != nil {
-			return 0, 0, err
+			return nil, err
 		}
 		customer_name = customer.EmployName
 	case common.AuthUser:
 		customerDao := mysql.NewCustomerDao()
 		customer, err := customerDao.SelectCustomerByID(customerID)
 		if err != nil {
-			return 0, 0, err
+			return nil, err
 		}
 		customer_name = customer.CustomerName
 	}
+	// 查到了所有ticket信息
 	// 执行 座位 的增加操作并 返回 座位id
 	seatDao := mysql.NewSeatDao()
-	seat_id, err := seatDao.SoldSeat(plan.HallID, seat_row, seat_col)
-	if err != nil {
-		return 0, 0, errors.New("选座失败")
-	}	
-	// TODO 执行票的增加操作  这里 改为 在redis中进行操作
-	auth_id := common.GetRoleID(auth)
-	ticketDao := mysql.NewTicketDao()
-	id, err := ticketDao.InsertTicket(customerID, plan_id, seat_id, customer_name, ticket_price, ticket_expire_time, plan.PlayID, auth_id)
-	if err != nil {
-		return 0, 0, err
+	seat_id, err := seatDao.SelectSeatID(plan.HallID, seat_row, seat_col)
+	if err != nil { 
+		return nil, err
 	}
-	TicketID = id
-	Price = ticket_price
-	return TicketID, Price, nil	
+	// customerID, plan_id, seat_id, customer_name, ticket_price, ticket_expire_time, plan.PlayID, auth_id
+	auth_id := common.GetRoleID(auth)
+	err = redis.InsertTicket(customerID, plan_id, seat_id, customer_name, ticket_price, ticket_expire_time, plan.PlayID, auth_id)
+	if err != nil{
+		return nil, err 
+	}
+	res := &dto.TicketPayResp{CustomerID: customerID, PlanID: plan_id, SeatID: seat_id, Money: ticket_price}
+	return	res, nil
 }
 
-// func (t *TicketService) BuyTicket(c *gin.Context, customerID int64, auth string, req *dto.TicketBuyReq) (url string, err error) {
+// func (t *TicketService) BuyTicket(customerID int64, auth string, req *dto.TicketBuyReq) (TicketID int64,Price float64, err error) {
 // 	plan_id := req.PlanID
 // 	seat_row := req.SeatRow
 // 	seat_col := req.SeatCol
@@ -363,67 +367,45 @@ func (t *TicketService) BuyTicket(customerID int64, auth string, req *dto.Ticket
 // 	planDao := mysql.NewPlanDao()
 // 	plan, err := planDao.SelectPlanByID(plan_id)
 // 	if err != nil {
-// 		return "", err
+// 		return 0, 0, err
 // 	}
 // 	ticket_price := plan.PlanPrice
 // 	plan_start_time := plan.PlanStartTime
 // 	ticket_expire_time := plan_start_time.Add(do.TicketExpiredTime)
 // 	// 检查 买票时间 和 plan的时间
 // 	if time.Now().After(ticket_expire_time) {
-// 		return "", errors.New("该计划已过期，不可买票")
+// 		return 0, 0, errors.New("该计划已过期，不可买票")
 // 	}
 // 	var customer_name string
 // 	switch auth {
 // 	case common.AuthAdmin:
 // 		customer, err := mysql.NewEmployDao().SelectEmployByID(customerID)
 // 		if err != nil {
-// 			return "", err
+// 			return 0, 0, err
 // 		}
 // 		customer_name = customer.EmployName
 // 	case common.AuthUser:
 // 		customerDao := mysql.NewCustomerDao()
 // 		customer, err := customerDao.SelectCustomerByID(customerID)
 // 		if err != nil {
-// 			return "", err
+// 			return 0, 0, err
 // 		}
 // 		customer_name = customer.CustomerName
 // 	}
-
-// 	// // 调用 付款 ，返回url
-// 	// response, err := http.Get("http://localhost:9999/sale/alipay")
-// 	// if err!= nil {
-// 	// 	return "", err
-// 	// }
-// 	// if response.StatusCode != http.StatusOK {
-// 	// 	return "", errors.New("支付宝支付失败")	
-// 	// }
-// 	// // 读取 body 并 提取 url
-// 	// body, err := io.ReadAll(response.Body)
-// 	// if err!= nil {
-// 	// 	return "", err
-// 	// }
-// 	// // 序列化 body 为 resp.ResponseData 类型的结构体
-// 	// var resp resp.ResponseData
-// 	// err = json.Unmarshal(body, &resp)
-// 	// if err!= nil {
-// 	// 	return "", err
-// 	// }
-// 	// // 提取 url 并 跳转到 支付宝支付页面
-// 	// url = resp.Data.(string)
-// 	// return url, nil
-
-// 	// // 执行 座位 的增加操作并 返回 座位id
-// 	// seatDao := mysql.NewSeatDao()
-// 	// seat_id, err := seatDao.SoldSeat(plan.HallID, seat_row, seat_col)
-// 	// if err != nil {
-// 	// 	return errors.New("选座失败")
-// 	// }	
-// 	// // 执行票的增加操作
-// 	// auth_id := common.GetRoleID(auth)
-// 	// ticketDao := mysql.NewTicketDao()
-// 	// err = ticketDao.InsertTicket(customerID, plan_id, seat_id, customer_name, ticket_price, ticket_expire_time, plan.PlayID, auth_id)
-// 	// if err != nil {
-// 	// 	return err
-// 	// }
-// 	// return nil	
+// 	// 执行 座位 的增加操作并 返回 座位id
+// 	seatDao := mysql.NewSeatDao()
+// 	seat_id, err := seatDao.SoldSeat(plan.HallID, seat_row, seat_col)
+// 	if err != nil {
+// 		return 0, 0, errors.New("选座失败")
+// 	}	
+// 	// TODO 执行票的增加操作  这里 改为 在redis中进行操作
+// 	auth_id := common.GetRoleID(auth)
+// 	ticketDao := mysql.NewTicketDao()
+// 	id, err := ticketDao.InsertTicket(customerID, plan_id, seat_id, customer_name, ticket_price, ticket_expire_time, plan.PlayID, auth_id)
+// 	if err != nil {
+// 		return 0, 0, err
+// 	}
+// 	TicketID = id
+// 	Price = ticket_price
+// 	return TicketID, Price, nil	
 // }

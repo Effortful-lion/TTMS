@@ -56,6 +56,15 @@ type TicketPlanPercentageResp struct {
 }
 
 type TicketPayReq struct {
-	TicketID int64 `json:"ticket_id" binding:"required"`	// 票ID
-	Money   float64 `json:"money" binding:"required"`		// 支付金额	
+	CustomerID int64 `json:"customer_id"`
+	PlanID int64 `json:"plan_id"`
+	SeatID int64 `json:"seat_id"`
+	Money float64 `json:"money"`
+}
+
+type TicketPayResp struct {
+	CustomerID int64 `json:"customer_id"`
+	PlanID int64 `json:"plan_id"`
+	SeatID int64 `json:"seat_id"`
+	Money float64 `json:"money"`
 }

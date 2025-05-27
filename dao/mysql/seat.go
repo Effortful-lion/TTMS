@@ -136,6 +136,18 @@ func (sd *SeatDao) SelectSeat(hall_id int64, row, col int)  (*do.Seat, error) {
 	return &seat, nil
 }
 
+func (sd *SeatDao) SelectSeatID(hall_id int64, row, col int)  (int64, error) { 
+	seat := do.Seat{}
+	err := DB.Where("hall_id = ? AND seat_row = ? AND seat_col = ?", hall_id, row, col).First(&seat).Error
+	if err != nil {
+		if err.Error() == "record not found" {
+			return 0, nil
+		}
+		return 0, err
+	}
+	return seat.SeatID, nil
+}
+
 // 查座(多个)
 func (sd *SeatDao) SelectSeatsByHallID(hall_id int64) ([]*do.Seat, error) {
 	var seats []do.Seat

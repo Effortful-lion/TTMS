@@ -175,13 +175,10 @@ func (t *TicketController)  BuyHandler(c *gin.Context) {
 	}
 	customerID := GetCurrentUserID(c)
 	auth := GetCurrentUserAuthority(c)
-	ticketID, price, err := service.NewTicketService().BuyTicket(customerID, auth, req)
+	data, err := service.NewTicketService().BuyTicket(customerID, auth, req)
 	if err != nil {
 		resp.ResponseErrorWithMsg(c, resp.CodeError, err.Error())
 		return
 	}
-	resp.ResponseSuccess(c, dto.TicketPayReq{
-		TicketID: ticketID,
-		Money: price,
-	})
+	resp.ResponseSuccess(c, data)
 }
