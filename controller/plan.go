@@ -48,7 +48,7 @@ func (uc *PlanController) AddPlanHandler(c *gin.Context) {
 		resp.ResponseError(c, resp.CodeInvalidParams)
 		return		
 	}
-	if common.TimeAfter(req.PlanStartTime, req.PlanEndTime){
+	if !common.TimeAfter(req.PlanStartTime, req.PlanEndTime){
 		resp.ResponseErrorWithMsg(c, resp.CodeInvalidParams, "结束时间一定晚于开始时间")
 		return	
 	}

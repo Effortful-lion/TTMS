@@ -6,7 +6,6 @@ import (
 	"TTMS/model/dto"
 	"TTMS/pkg/common"
 	"TTMS/pkg/resp"
-	"TTMS/service"
 	"context"
 	"fmt"
 	"net/http"
@@ -131,8 +130,46 @@ func Callback(c *gin.Context) {
 		return
 	}
 
+	
+	//c.JSON(http.StatusOK, gin.H{"message": fmt.Sprintf("订单 %s 支付成功", outTradeNo)})
+	c.Redirect(http.StatusMovedPermanently, "http://1.94.214.117:3000/manage")
+}
+
+
+
+// 支付成功的通知接口
+func Notify(c *gin.Context) {
+	if err := c.Request.ParseForm(); err != nil {
+		fmt.Println("解析表单数据失败", err)
+		return
+	}
+
+	var notification, err = client.DecodeNotification(c.Request.Form)
+	if err != nil {
+		fmt.Println("解析异步通知发生错误", err)
+		return
+	}
+
+	fmt.Println("解析异步通知成功:", notification.NotifyId)
+
+	var p = alipay.NewPayload("alipay.trade.query")
+	p.AddBizField("out_trade_no", notification.OutTradeNo)
+
+	var rsp *alipay.TradeQueryRsp
+	if err = client.Request(context.Background(), p, &rsp); err != nil {
+		fmt.Printf("异步通知验证订单 %s 信息发生错误: %s \n", notification.OutTradeNo, err.Error())
+		return
+	}
+	if rsp.IsFailure() {
+		fmt.Printf("异步通知验证订单 %s 信息发生错误: %s-%s \n", notification.OutTradeNo, rsp.Msg, rsp.SubMsg)
+		return
+	}
+
+	fmt.Printf("订单 %s 支付成功 \n", notification.OutTradeNo)
+
+	// TODO 保存票信息
 	// 验证订单信息成功，从订单中拿订单号
-	pay_id := p.OutTradeNo // 支付宝订单号
+	pay_id := notification.OutTradeNo // 支付宝订单号
 
 
 	fmt.Println("支付成功")
@@ -191,94 +228,55 @@ func Callback(c *gin.Context) {
 		resp.ResponseErrorWithMsg(c, resp.CodeError, "订单插入失败")
 		return
 	}
-	//c.JSON(http.StatusOK, gin.H{"message": fmt.Sprintf("订单 %s 支付成功", outTradeNo)})
-	c.Redirect(http.StatusMovedPermanently, "http://baidu.com")
-}
 
-func Notify(c *gin.Context) {
-	if err := c.Request.ParseForm(); err != nil {
-		resp.ResponseErrorWithMsg(c, resp.CodeError, err.Error())
-		// 删除票的信息
-		ticket_id, _ := common.GetContext(c, "ticket_id")
-		ticket_id_int, ok := ticket_id.(int64)
-		if !ok {
-			resp.ResponseErrorWithMsg(c, resp.CodeError, "ticket_id 类型转换失败")
-			return	
-		}
-		if err = service.NewTicketService().CancelTicket(ticket_id_int); err!= nil {
-			resp.ResponseErrorWithMsg(c, resp.CodeError, err.Error())
-			return
-		}
-		return
-	}
-	var notification, err = client.DecodeNotification(c.Request.Form)
+	// 修改座位状态
+	// 根据 plan_id 获取 hall_id
+	plan, err := mysql.NewPlanDao().SelectPlanByID(plan_id)
 	if err != nil {
-		resp.ResponseErrorWithMsg(c, resp.CodeError, fmt.Sprintf("解析异步通知发生错误: %s \n", err.Error()))
-		// 删除票的信息
-		ticket_id, _ := common.GetContext(c, "ticket_id")
-		ticket_id_int, ok := ticket_id.(int64)
-		if !ok {
-			resp.ResponseErrorWithMsg(c, resp.CodeError, "ticket_id 类型转换失败")
-			return	
-		}
-		if err = service.NewTicketService().CancelTicket(ticket_id_int); err!= nil {
-			resp.ResponseErrorWithMsg(c, resp.CodeError, err.Error())
-			return
-		}
+		resp.ResponseErrorWithMsg(c, resp.CodeError, "查询计划失败导致无法锁定座位")
 		return
 	}
-
-	fmt.Println("解析异步通知成功:", notification.NotifyId)
-
-	var p = alipay.NewPayload("alipay.trade.query")
-	p.AddBizField("out_trade_no", notification.OutTradeNo)
-
-	var rsp *alipay.TradeQueryRsp
-	if err = client.Request(context.Background(), p, &rsp); err != nil {
-		resp.ResponseErrorWithMsg(c, resp.CodeError, fmt.Sprintf("异步通知验证订单 %s 信息发生错误: %s \n", notification.OutTradeNo, err.Error()))
-		// 删除票的信息
-		ticket_id, _ := common.GetContext(c, "ticket_id")
-		ticket_id_int, ok := ticket_id.(int64)
-		if !ok {
-			resp.ResponseErrorWithMsg(c, resp.CodeError, "ticket_id 类型转换失败")
-			return	
-		}
-		if err = service.NewTicketService().CancelTicket(ticket_id_int); err!= nil {
-			resp.ResponseErrorWithMsg(c, resp.CodeError, err.Error())
-			return
-		}
+	seat, err := mysql.NewSeatDao().SelectSeatByID(seat_id)
+	if err != nil {
+		resp.ResponseErrorWithMsg(c, resp.CodeError, "查询座位失败导致无法锁定座位")
 		return
 	}
-	if rsp.IsFailure() {
-		resp.ResponseErrorWithMsg(c, resp.CodeError, fmt.Sprintf("异步通知验证订单 %s 信息发生错误: %s-%s \n", notification.OutTradeNo, rsp.Msg, rsp.SubMsg))
-		// 删除票的信息
-		ticket_id, _ := common.GetContext(c, "ticket_id")
-		ticket_id_int, ok := ticket_id.(int64)
-		if !ok {
-			resp.ResponseErrorWithMsg(c, resp.CodeError, "ticket_id 类型转换失败")
-			return	
-		}
-		if err = service.NewTicketService().CancelTicket(ticket_id_int); err!= nil {
-			resp.ResponseErrorWithMsg(c, resp.CodeError, err.Error())
-			return
-		}
-		return
-	}
-	
-	fmt.Printf("订单 %s 支付成功 \n", notification.OutTradeNo)
+	hall_id := plan.HallID
+	_, _ = mysql.NewSeatDao().SoldSeat(hall_id, seat.SeatRow, seat.SeatCol)
+
 	client.ACKNotification(c.Writer)
 }
 
-// // 支付成功的通知接口
-// func Notify2(c *gin.Context) {
+// func Notify(c *gin.Context) {
 // 	if err := c.Request.ParseForm(); err != nil {
-// 		fmt.Println("解析表单数据失败", err)
+// 		resp.ResponseErrorWithMsg(c, resp.CodeError, err.Error())
+// 		// 删除票的信息
+// 		ticket_id, _ := common.GetContext(c, "ticket_id")
+// 		ticket_id_int, ok := ticket_id.(int64)
+// 		if !ok {
+// 			resp.ResponseErrorWithMsg(c, resp.CodeError, "ticket_id 类型转换失败")
+// 			return	
+// 		}
+// 		if err = service.NewTicketService().CancelTicket(ticket_id_int); err!= nil {
+// 			resp.ResponseErrorWithMsg(c, resp.CodeError, err.Error())
+// 			return
+// 		}
 // 		return
 // 	}
-
 // 	var notification, err = client.DecodeNotification(c.Request.Form)
 // 	if err != nil {
-// 		fmt.Println("解析异步通知发生错误", err)
+// 		resp.ResponseErrorWithMsg(c, resp.CodeError, fmt.Sprintf("解析异步通知发生错误: %s \n", err.Error()))
+// 		// 删除票的信息
+// 		ticket_id, _ := common.GetContext(c, "ticket_id")
+// 		ticket_id_int, ok := ticket_id.(int64)
+// 		if !ok {
+// 			resp.ResponseErrorWithMsg(c, resp.CodeError, "ticket_id 类型转换失败")
+// 			return	
+// 		}
+// 		if err = service.NewTicketService().CancelTicket(ticket_id_int); err!= nil {
+// 			resp.ResponseErrorWithMsg(c, resp.CodeError, err.Error())
+// 			return
+// 		}
 // 		return
 // 	}
 
@@ -289,15 +287,39 @@ func Notify(c *gin.Context) {
 
 // 	var rsp *alipay.TradeQueryRsp
 // 	if err = client.Request(context.Background(), p, &rsp); err != nil {
-// 		fmt.Printf("异步通知验证订单 %s 信息发生错误: %s \n", notification.OutTradeNo, err.Error())
+// 		resp.ResponseErrorWithMsg(c, resp.CodeError, fmt.Sprintf("异步通知验证订单 %s 信息发生错误: %s \n", notification.OutTradeNo, err.Error()))
+// 		// 删除票的信息
+// 		ticket_id, _ := common.GetContext(c, "ticket_id")
+// 		ticket_id_int, ok := ticket_id.(int64)
+// 		if !ok {
+// 			resp.ResponseErrorWithMsg(c, resp.CodeError, "ticket_id 类型转换失败")
+// 			return	
+// 		}
+// 		if err = service.NewTicketService().CancelTicket(ticket_id_int); err!= nil {
+// 			resp.ResponseErrorWithMsg(c, resp.CodeError, err.Error())
+// 			return
+// 		}
 // 		return
 // 	}
 // 	if rsp.IsFailure() {
-// 		fmt.Printf("异步通知验证订单 %s 信息发生错误: %s-%s \n", notification.OutTradeNo, rsp.Msg, rsp.SubMsg)
+// 		resp.ResponseErrorWithMsg(c, resp.CodeError, fmt.Sprintf("异步通知验证订单 %s 信息发生错误: %s-%s \n", notification.OutTradeNo, rsp.Msg, rsp.SubMsg))
+// 		// 删除票的信息
+// 		ticket_id, _ := common.GetContext(c, "ticket_id")
+// 		ticket_id_int, ok := ticket_id.(int64)
+// 		if !ok {
+// 			resp.ResponseErrorWithMsg(c, resp.CodeError, "ticket_id 类型转换失败")
+// 			return	
+// 		}
+// 		if err = service.NewTicketService().CancelTicket(ticket_id_int); err!= nil {
+// 			resp.ResponseErrorWithMsg(c, resp.CodeError, err.Error())
+// 			return
+// 		}
 // 		return
 // 	}
-
+	
 // 	fmt.Printf("订单 %s 支付成功 \n", notification.OutTradeNo)
+
+// 	// TODO 保存票信息
 
 // 	client.ACKNotification(c.Writer)
 // }

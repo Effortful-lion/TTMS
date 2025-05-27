@@ -3,6 +3,7 @@ package mysql
 import (
 	"TTMS/model/do"
 	"TTMS/pkg/common"
+	"time"
 )
 
 type PlanDao struct {
@@ -51,7 +52,8 @@ func (*PlanDao) SelectPlanByID(plan_id int64) (*do.Plan, error) {
 
 func (*PlanDao) SelectPlanList() ([]*do.Plan, error) {
 	var plans []do.Plan
-	err := DB.Find(&plans).Error
+	// 查询 plan_end_time 大于当前时间的记录
+	err := DB.Where("plan_end_time > ?", time.Now()).Find(&plans).Error
 	if err != nil {
 		return nil, err
 	}
@@ -111,5 +113,12 @@ func (*PlanDao) DeletePlanByPlayID(play_id int64) error {
 	if err := DB.Where("play_id =?", play_id).Delete(&do.Plan{}).Error; err!= nil {
 		return err	
 	}	
+	return nil
+}
+
+func (*PlanDao) DeletePlanBeforeNow() error {
+	if err := DB.Where("plan_end_time < ?", time.Now()).Delete(&do.Plan{}).Error; err!= nil {
+		return err
+	}
 	return nil
 }

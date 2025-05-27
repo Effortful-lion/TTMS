@@ -40,6 +40,7 @@ func InitMysql() (err error) {
 	MigrateTables()
 	// 初始化角色信息
 	InitRole()
+	SyncData()
 	return
 }
 

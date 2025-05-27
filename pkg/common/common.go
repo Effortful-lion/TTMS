@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"math"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -34,15 +35,43 @@ func CalculatePercentageFloat(part, total float64) float64 {
 	}
 }
 
+// ParseStringTime 解析各种常见时间格式，优先支持带时区的格式
 func ParseStringTime(timeStr string) (time.Time) {
 	if timeStr == "" {
-		return time.Now()	
-	}
-	parsedTime, err := time.ParseInLocation("2006-01-02 15:04:05", timeStr, time.Local)
-	if err != nil {
 		return time.Now()
 	}
-	return parsedTime
+
+	layouts := []string{
+		time.RFC3339,                   // "2025-05-27T14:30:00+08:00"
+		"2006-01-02T15:04:05Z07:00",   // 同 RFC3339
+		"2006-01-02 15:04:05 -0700",   // 带时区偏移
+		"2006-01-02 15:04:05 MST",     // 带时区缩写
+		"2006-01-02 15:04:05",         // 仅日期时间
+		"2006/01/02 15:04:05",         // 斜杠分隔
+		"2006-01-02",                  // 仅日期
+	}
+
+	var parsedTime time.Time
+	var err error
+
+	for _, layout := range layouts {
+		parsedTime, err = time.Parse(layout, timeStr)
+		if err == nil {
+			return parsedTime
+		}
+	}
+
+	// 如果都失败，尝试拆分解析（兼容老逻辑）
+	parts := strings.Split(timeStr, " ")
+	if len(parts) >= 2 {
+		dateTimeStr := parts[0] + " " + parts[1]
+		parsedTime, err = time.Parse("2006-01-02 15:04:05", dateTimeStr)
+		if err == nil {
+			return parsedTime
+		}
+	}
+
+	return time.Time{}
 }
 
 // 将时间转换为字符串
@@ -50,15 +79,10 @@ func ParseTimeToString(t time.Time) string {
     return t.Format("2006-01-02 15:04:05")
 }
 
+// ParseStringTimeToTimeStamp 将字符串时间转为 Unix 时间戳（秒）
 func ParseStringTimeToTimeStamp(timeStr string) (int64) {
-	if timeStr == "" {
-		return time.Now().Unix()
-	}
-	parsedTime, err := time.ParseInLocation("2006-01-02 15:04:05", timeStr, time.Local)
-	if err!= nil {
-		return time.Now().Unix()
-	}
-	return parsedTime.Unix()
+	t := ParseStringTime(timeStr)
+	return t.Unix()
 }
 
 func ParseStringToInt64(str string) (int64, error) {

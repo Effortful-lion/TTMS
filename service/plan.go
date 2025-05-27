@@ -6,6 +6,7 @@ import (
 	"TTMS/model/dto"
 	"TTMS/pkg/common"
 	"errors"
+	"time"
 )
 
 type PlanService struct {
@@ -111,8 +112,22 @@ func (*PlanService) AddPlan(req *dto.PlanInsertReq) error {
 	plan_end_time := req.PlanEndTime
 	plan_price := req.PlanPrice
 
+	sub := common.ParseStringTimeToTimeStamp(req.PlanEndTime) - common.ParseStringTimeToTimeStamp(req.PlanStartTime)
+	// 将时间戳转为 duration
+	duration := time.Duration(sub) * time.Second
+	// 查询play的时长
+	playDao := mysql.NewPlayDao()
+	play, err := playDao.SelectPlayByID(req.PlayID)
+	if err != nil {
+		return err
+	}
+
+	if play.PlayDuration != int(duration.Minutes()) {
+		return errors.New("剧目和演出厅时长不一致")
+	}
+
 	// 插入前检查 剧目和演出厅是否存在
-	play, err := mysql.NewPlayDao().SelectPlayByID(play_id)
+	play, err = mysql.NewPlayDao().SelectPlayByID(play_id)
 	if err != nil {
 		return err
 	}

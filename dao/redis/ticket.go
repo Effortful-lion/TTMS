@@ -1,6 +1,7 @@
 package redis
 
 import (
+	"TTMS/pkg/common"
 	"context"
 	"fmt"
 	"time"
@@ -37,14 +38,14 @@ func GetTicketOther(key string) (map[string]string, error) {
 
 func InsertTicket(customerID, planID, seatID int64, customerName string, price float64, expire time.Time, playID int64, authID int8) error {
     key := fmt.Sprintf("ticket:%d_%d_%d", customerID, planID, seatID)
-    
+    fmt.Println("票过期时间：",expire)
     values := map[string]interface{}{
         "customerID":   fmt.Sprintf("%d", customerID),
         "planID":       fmt.Sprintf("%d", planID),
         "seatID":       fmt.Sprintf("%d", seatID),
         "customerName": customerName,
         "price":        fmt.Sprintf("%f", price),
-        "expire":       expire.String(), // 把Duration转换为字符串
+        "expire":       common.ParseTimeToString(expire),
         "playID":       fmt.Sprintf("%d", playID),
         "authID":       fmt.Sprintf("%d", authID),
     }
@@ -56,7 +57,7 @@ func InsertTicket(customerID, planID, seatID int64, customerName string, price f
         return cmd.Err()
     }
 
-    // 使用Expire设置过期时间
+    // 使用Expire设置过期时间( TicketExpiredTime 5 分钟 是 等待付款成功后调用，expire 是票的过期时间)
     if err := Rdb.Expire(ctx, key, TicketExpiredTime).Err(); err != nil {
         return err
     }

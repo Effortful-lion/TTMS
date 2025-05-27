@@ -7,6 +7,7 @@ import (
 	"TTMS/model/dto"
 	"TTMS/pkg/common"
 	"errors"
+	"fmt"
 	"time"
 )
 
@@ -321,8 +322,10 @@ func (t *TicketService) BuyTicket(customerID int64, auth string, req *dto.Ticket
 	}
 	ticket_price := plan.PlanPrice
 	plan_start_time := plan.PlanStartTime
+	fmt.Println("plan_start_time:", plan_start_time)
 	ticket_expire_time := plan_start_time.Add(do.TicketExpiredTime)
-	// 检查 买票时间 和 plan的时间
+	fmt.Println("ticket_expire_time:", ticket_expire_time)
+	// 检查 买票时间（当前时间） 和 票失效 的时间
 	if time.Now().After(ticket_expire_time) {
 		return nil, errors.New("该计划已过期，不可买票")
 	}
@@ -345,10 +348,19 @@ func (t *TicketService) BuyTicket(customerID int64, auth string, req *dto.Ticket
 	// 查到了所有ticket信息
 	// 执行 座位 的增加操作并 返回 座位id
 	seatDao := mysql.NewSeatDao()
-	seat_id, err := seatDao.SelectSeatID(plan.HallID, seat_row, seat_col)
+	seat, err := seatDao.SelectSeat(plan.HallID, seat_row, seat_col)
+	seat_id := seat.SeatID
+	seat_status := seat.SeatStatus
 	if err != nil { 
 		return nil, err
 	}
+	if seat_id == 0 {
+		return nil, errors.New("选择的座位超出了演出厅范围")
+	}
+	if seat_status == 1 {
+		return nil, errors.New("该座位已被占用")
+	}
+	
 	// customerID, plan_id, seat_id, customer_name, ticket_price, ticket_expire_time, plan.PlayID, auth_id
 	auth_id := common.GetRoleID(auth)
 	err = redis.InsertTicket(customerID, plan_id, seat_id, customer_name, ticket_price, ticket_expire_time, plan.PlayID, auth_id)
